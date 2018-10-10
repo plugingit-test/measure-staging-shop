@@ -2,78 +2,70 @@
   <div class="grid">
 
     <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
-      <div class="form-message form-message--success hide" id="ResetSuccess">
-        {{ 'customer.recover_password.success' | t }}
-      </div>
+      <div class="content-block text-center">
 
-      <div id="CustomerLoginForm" class="form-vertical">
-        {% form 'customer_login' %}
+        <div class="form-success hide" id="ResetSuccess">
+          {{ 'customer.recover_password.success' | t }}
+        </div>
 
-          <h1 class="text-center">{{ 'customer.login.title' | t }}</h1>
+        <div id="CustomerLoginForm" class="form-vertical">
+          {% form 'customer_login' %}
 
-          {%- if form.errors -%}
-            <div class="form-message form-message--error">
-              {{ form.errors | default_errors }}
-            </div>
-          {%- endif -%}
+            <h1>{{ 'customer.login.title' | t }}</h1>
 
-          <label for="CustomerEmail">{{ 'customer.login.email' | t }}</label>
-          <input type="email" name="customer[email]" id="CustomerEmail" class="{% if form.errors contains 'email' %} input--error{% endif %}" autocorrect="off" autocapitalize="off" autofocus>
+            {{ form.errors | default_errors }}
 
-          {% if form.password_needed %}
-            <label for="CustomerPassword">{{ 'customer.login.password' | t }}</label>
-            <input type="password" value="" name="customer[password]" id="CustomerPassword" class="{% if form.errors contains 'password' %} input--error{% endif %}">
-          {% endif %}
+            <label for="CustomerEmail" class="label--hidden">{{ 'customer.login.email' | t }}</label>
+            <input type="email" name="customer[email]" id="CustomerEmail" class="{% if form.errors contains 'email' %} input--error{% endif %}" placeholder="{{ 'customer.login.email' | t }}" autocorrect="off" autocapitalize="off" autofocus>
 
-          <div class="text-center">
+            {% if form.password_needed %}
+              <label for="CustomerPassword" class="label--hidden">{{ 'customer.login.password' | t }}</label>
+              <input type="password" value="" name="customer[password]" id="CustomerPassword" class="{% if form.errors contains 'password' %} input--error{% endif %}" placeholder="{{ 'customer.login.password' | t }}">
+            {% endif %}
+
+            <p>
+              <input type="submit" class="btn" value="{{ 'customer.login.sign_in' | t }}">
+            </p>
             {% if form.password_needed %}
               <p><a href="#recover" id="RecoverPassword">{{ 'customer.login.forgot_password' | t }}</a></p>
             {% endif %}
 
-            <input type="submit" class="btn" value="{{ 'customer.login.sign_in' | t }}">
+            <p>{{ 'layout.customer.create_account' | t | customer_register_link }}</p>
 
-            <p>
-              {{ 'layout.customer.create_account' | t | customer_register_link }}
-            </p>
-          </div>
-
-        {% endform %}
-      </div>
-
-      <div id="RecoverPasswordForm" class="hide">
-
-        <div class="text-center">
-          <h2>{{ 'customer.recover_password.title' | t }}</h2>
-          <p>{{ 'customer.recover_password.subtext' | t }}</p>
+          {% endform %}
         </div>
 
-        <div class="form-vertical">
-          {% form 'recover_customer_password' %}
+        {% comment %}
+          JS shows/hides this form in ShopifySlate.loginForms()
+        {% endcomment %}
+        <div id="RecoverPasswordForm" class="hide">
 
-            {%- if form.errors -%}
-              <div class="form-message form-message--error">
-                {{ form.errors | default_errors }}
-              </div>
-            {%- endif -%}
+          <h2 class="h1">{{ 'customer.recover_password.title' | t }}</h2>
+          <p>{{ 'customer.recover_password.subtext' | t }}</p>
 
-            {% comment %}
-              Add a hidden span to indicate the form was submitted succesfully.
-            {% endcomment %}
-            {% if form.posted_successfully? %}
-              <span class="hide reset-password-success"></span>
-            {% endif %}
+          <div class="form-vertical">
+            {% form 'recover_customer_password' %}
 
-            <label for="RecoverEmail">{{ 'customer.recover_password.email' | t }}</label>
-            <input type="email" value="" name="email" id="RecoverEmail" class="input-full"autocorrect="off" autocapitalize="off">
+              {{ form.errors | default_errors }}
 
-            <div class="text-center">
+              {% comment %}
+                Add a hidden span to indicate the form was submitted succesfully.
+              {% endcomment %}
+              {% if form.posted_successfully? %}
+                <span class="hide reset-password-success"></span>
+              {% endif %}
+
+              <label for="RecoverEmail" class="label--hidden">{{ 'customer.recover_password.email' | t }}</label>
+              <input type="email" value="" name="email" id="RecoverEmail" placeholder="{{ 'customer.recover_password.email' | t }}" autocorrect="off" autocapitalize="off">
+
               <p>
                 <input type="submit" class="btn" value="{{ 'customer.recover_password.submit' | t }}">
               </p>
 
-              <button type="button" id="HideRecoverPasswordLink" class="text-link">{{ 'customer.recover_password.cancel' | t }}</button>
-            </div>
-          {% endform %}
+              <button type="button" id="HideRecoverPasswordLink" class="text-link link-accent-color">{{ 'customer.recover_password.cancel' | t }}</button>
+            {% endform %}
+          </div>
+
         </div>
 
       </div>
@@ -83,9 +75,8 @@
         during checkout, not on the default /login page.
       {% endcomment %}
       {% if shop.checkout.guest_login %}
-        <div class="text-center">
-          <hr class="hr--invisible">
-          <h2>{{ 'customer.login.guest_title' | t }}</h2>
+        <div class="content-block text-center">
+          <h2 class="h1">{{ 'customer.login.guest_title' | t }}</h2>
 
           {% form 'guest_login' %}
             <input type="submit" class="btn" value="{{ 'customer.login.guest_continue' | t }}">

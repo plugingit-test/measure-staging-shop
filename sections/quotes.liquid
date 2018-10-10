@@ -1,33 +1,35 @@
-<div class="page-width" data-section-id="{{ section.id }}" data-section-type="quotes">
-  {% if section.settings.title != blank %}
-    <div class="section-header text-center">
-      <h2>{{ section.settings.title | escape }}</h2>
-    </div>
-  {% endif %}
-
-  {% if section.blocks.size > 0 %}
-    <div class="quotes-wrapper">
-      <div class="quotes-slider" id="Quotes-{{ section.id }}" data-count="{{ section.blocks.size }}">
-        {% for block in section.blocks %}
-          <div class="quotes-slide--{{ block.id }}" {{ block.shopify_attributes }}>
-            <blockquote class="quotes-slider__text text-center">
-              <span class="quote-icon">{% include 'icon-quote' %}</span>
-              {% if block.settings.quote != blank %}
-                <div class="rte-setting rte">{{ block.settings.quote }}</div>
-              {% endif %}
-              {% if block.settings.author != blank %}
-                <cite>{{ block.settings.author | escape }}</cite>
-              {% endif %}
-            </blockquote>
-          </div>
-        {% endfor %}
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    {% if section.settings.title != blank %}
+      <div class="section-block__header text-center">
+        <h4 class="h1--mini section-block__title">{{ section.settings.title | escape }}</h4>
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
 
-  {% if section.blocks.size == 0 %}
-    {% include 'no-blocks' %}
-  {% endif %}
+    {% if section.blocks.size > 0 %}
+      <div class="quotes-wrapper">
+        <div class="quotes-slider" id="Quotes-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="quotes">
+          {% for block in section.blocks %}
+            <div class="quote__slide-wrapper quote__slide-wrapper--{{ block.id }}" {{ block.shopify_attributes }}>
+              <div class="quote__slide text-center">
+                <div class="page-width">
+                  <blockquote>
+                    <span class="quote-icon">{% include 'icon-quote' %}</span>
+                    <div class="rte-setting">{{ block.settings.quote }}</div>
+                    <cite>{{ block.settings.author | escape }}</cite>
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.blocks.size == 0 %}
+      {% include 'no-blocks' %}
+    {% endif %}
+  </div>
 </div>
 
 
@@ -44,7 +46,7 @@
     "pt-BR": "Depoimentos"
   },
   "class": "index-section",
-  "max_blocks": 9,
+  "max_blocks": 5,
   "settings": [
     {
       "type": "text",
@@ -53,7 +55,7 @@
         "de": "Titel",
         "en": "Heading",
         "es": "Título",
-        "fr": "En-tête",
+        "fr": "Titre",
         "it": "Heading",
         "ja": "見出し",
         "pt-BR": "Título"
@@ -73,13 +75,13 @@
     {
       "type": "quote",
       "name": {
-        "de": "Testimonial",
-        "en": "Testimonial",
-        "es": "Testimonio",
-        "fr": "Témoignages",
-        "it": "Testimonial",
-        "ja": "お客様の声",
-        "pt-BR": "Depoimento"
+        "de": "Zitat",
+        "en": "Quote",
+        "es": "Cotización",
+        "fr": "Citation",
+        "it": "Citazione",
+        "ja": "引用",
+        "pt-BR": "Citação"
       },
       "settings": [
         {
@@ -123,7 +125,7 @@
             "fr": "Nom de l'auteur",
             "it": "Nome dell'autore",
             "ja": "筆者の名前",
-            "pt-BR": "Nome do(a) autor(a)"
+            "pt-BR": "Nome do autor"
           }
         }
       ]
@@ -150,9 +152,6 @@
         "pt-BR": "Texto"
       },
       "blocks": [
-        {
-          "type": "quote"
-        },
         {
           "type": "quote"
         },

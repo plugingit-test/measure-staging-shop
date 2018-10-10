@@ -1,101 +1,116 @@
-{% if section.settings.message %}
-  <style>
-    {% if section.settings.logo != blank %}
-      .site-header__logo-image {
-        max-width: {{ section.settings.logo_max_width | escape }}px;
-      }
-    {% endif %}
+<style>
+.site-header__logo img {
+  max-width: {{ section.settings.logo_max_width | default: '450' | remove: 'px' | append: 'px' | escape }};
+}
+</style>
 
-    {% if section.settings.align_logo == 'left' %}
-      .site-header__logo-image {
-        margin: 0;
-      }
-    {% endif %}
-  </style>
-{% endif %}
+<div id="NavDrawer" class="drawer drawer--left">
+  <div class="drawer__inner">
+    <form action="/search" method="get" class="drawer__search" role="search">
+      <input type="search" name="q" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="drawer__search-input">
 
-<div data-section-id="{{ section.id }}" data-section-type="header-section">
-  {% if section.settings.message %}
-    {% if section.settings.home_page_only == false or template.name == 'index' %}
-      <style>
-        .announcement-bar {
-          background-color: {{ section.settings.color_bg }};
-        }
+      <button type="submit" class="text-link drawer__search-submit">
+        {% include 'icon-search' %}
+        <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+      </button>
+    </form>
+    <ul class="drawer__nav">
+      {% for link in linklists[section.settings.main_linklist].links %}
+        {% assign child_list_handle = link.title | handleize %}
 
-        .announcement-bar--link:hover {
-          {% assign brightness = section.settings.color_bg | color_brightness %}
+        {% if link.links != blank %}
+          <li class="drawer__nav-item">
+            <div class="drawer__nav-has-sublist">
+              <a href="{{ link.url }}"
+                class="drawer__nav-link drawer__nav-link--top-level drawer__nav-link--split"
+                id="DrawerLabel-{{ child_list_handle }}"
+                {% if link.active %} aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+              <button type="button" aria-controls="DrawerLinklist-{{ child_list_handle }}" class="text-link drawer__nav-toggle-btn drawer__meganav-toggle" aria-label="{{ link.title }} {{ 'general.drawers.menu' | t }}" aria-expanded="false">
+                <span class="drawer__nav-toggle--open">
+                  {% include 'icon-plus' %}
+                </span>
+                <span class="drawer__nav-toggle--close">
+                  {% include 'icon-minus' %}
+                </span>
+              </button>
+            </div>
 
-          {% if brightness <= 192 %}
-            {% assign lightenAmount = 255 | minus: brightness | divided_by: 255 | times: 16 %}
-            background-color: {{ section.settings.color_bg | color_lighten: lightenAmount }};
-          {% else %}
-            {% assign darkenAmount = 255 | divided_by: brightness | times: 8 %}
-            background-color: {{ section.settings.color_bg | color_darken: darkenAmount }};
-          {% endif %}
-        }
-
-        .announcement-bar__message {
-          color: {{ section.settings.color_text }};
-        }
-      </style>
-
-      {% if section.settings.message_link == blank %}
-        <div class="announcement-bar">
-      {% else %}
-        <a href="{{ section.settings.message_link }}" class="announcement-bar announcement-bar--link">
-      {% endif %}
-
-        <p class="announcement-bar__message">{{ section.settings.message_text | escape }}</p>
-
-      {% if section.settings.message_link == blank %}
-        </div>
-      {% else %}
-        </a>
-      {% endif %}
-
-    {% endif %}
-  {% endif %}
-
-  <header class="site-header{% if section.settings.align_logo == 'left' %} border-bottom logo--left{% else %} logo--center{% endif %}" role="banner">
-    <div class="grid grid--no-gutters grid--table site-header__mobile-nav">
-      {% if section.settings.align_logo == 'center' %}
-        {%- assign logo_classes = 'medium-up--one-third medium-up--push-one-third logo-align--center' -%}
-      {% else %}
-        {%- assign logo_classes = 'medium-up--one-quarter logo-align--left' -%}
-      {% endif %}
-
-      <div class="grid__item {{ logo_classes }}">
-        {% comment %}
-          Use the uploaded logo from theme settings if enabled.
-          Site name gets precedence with H1 tag on homepage, div on other pages.
-        {% endcomment %}
-        {% if template.name == 'index' %}
-          <h1 class="h2 site-header__logo">
+            <div class="meganav meganav--drawer" id="DrawerLinklist-{{ child_list_handle }}" aria-labelledby="DrawerLabel-{{ child_list_handle }}" role="navigation">
+              <ul class="meganav__nav">
+                {% include 'drawer-nav' %}
+              </ul>
+            </div>
+          </li>
         {% else %}
-          <div class="h2 site-header__logo">
+          <li class="drawer__nav-item">
+            <a href="{{ link.url }}"
+              class="drawer__nav-link drawer__nav-link--top-level"
+              {% if link.active %} aria-current="page"{% endif %}
+            >
+              {{ link.title }}
+            </a>
+          </li>
         {% endif %}
-          {% if section.settings.logo %}
-            {%- assign img_url = section.settings.logo | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
-            <a href="/" class="site-header__logo-image{% if section.settings.align_logo == 'center' %} site-header__logo-image--centered{% endif %}">
-              {% capture logo_alt %}{{ section.settings.logo.alt | default: shop.name }}{% endcapture %}
-              <img class="lazyload js"
-                   src="{{ section.settings.logo | img_url: '300x300' }}"
-                   data-src="{{ img_url }}"
-                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
-                   data-aspectratio="{{ section.settings.logo.aspect_ratio }}"
-                   data-sizes="auto"
-                   alt="{{ logo_alt | escape }}"
-                   style="max-width: {{ section.settings.logo_max_width }}px">
-              <noscript>
-                {% capture image_size %}{{ section.settings.logo_max_width | escape }}x{% endcapture %}
-                <img src="{{ section.settings.logo | img_url: image_size }}"
-                     srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
-                     alt="{{ section.settings.logo.alt | default: shop.name }}"
-                     style="max-width: {{ section.settings.logo_max_width }}px;">
-              </noscript>
+      {% endfor %}
+
+      {% if shop.customer_accounts_enabled %}
+        {% if customer %}
+          <li class="drawer__nav-item">
+            <a href="/account" class="drawer__nav-link drawer__nav-link--top-level">
+              {{ 'layout.customer.account' | t }}
+            </a>
+          </li>
+          <li class="drawer__nav-item">
+            <a href="/account/logout" class="drawer__nav-link drawer__nav-link--top-level">
+              {{ 'layout.customer.log_out' | t }}
+            </a>
+          </li>
+        {% else %}
+          <li class="drawer__nav-item">
+            <a href="/account/login" class="drawer__nav-link drawer__nav-link--top-level">
+              {{ 'layout.customer.account' | t }}
+            </a>
+          </li>
+        {% endif %}
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+<header class="site-header page-element is-moved-by-drawer" role="banner" data-section-id="{{ section.id }}" data-section-type="header">
+  <div class="site-header__upper page-width">
+    <div class="grid grid--table">
+      <div class="grid__item small--one-quarter medium-up--hide">
+        <button type="button" class="text-link site-header__link js-drawer-open-left">
+          <span class="site-header__menu-toggle--open">
+            {% include 'icon-hamburger' %}
+          </span>
+          <span class="site-header__menu-toggle--close">
+            {% include 'icon-close' %}
+          </span>
+          <span class="icon__fallback-text">{{ 'general.drawers.navigation' | t }}</span>
+        </button>
+      </div>
+      <div class="grid__item small--one-half medium-up--two-thirds small--text-center">
+        {% if template.name == 'index' %}
+          <h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+        {% else %}
+          <div class="site-header__logo h1" itemscope itemtype="http://schema.org/Organization">
+        {% endif %}
+          {% if section.settings.logo != blank %}
+            {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+            <a href="/" itemprop="url" class="site-header__logo-link">
+              <img src="{{ section.settings.logo | img_url: image_size }}"
+                   srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
+                   alt="{{ section.settings.logo.alt | default: shop.name }}"
+                   itemprop="logo">
             </a>
           {% else %}
-            <a class="site-header__logo-link" href="/">{{ shop.name }}</a>
+            {% assign shop_name_length = shop.name.size %}
+            <a href="/" itemprop="url" {% if shop_name_length > 10 %} class="site-header__shop-name--small"{% endif %}>{{ shop.name }}</a>
           {% endif %}
         {% if template.name == 'index' %}
           </h1>
@@ -104,219 +119,146 @@
         {% endif %}
       </div>
 
-      {% if section.settings.align_logo == 'left' %}
-        <nav class="grid__item medium-up--one-half small--hide" id="AccessibleNav" role="navigation">
-          {% include 'site-nav' %}
-        </nav>
-      {% endif %}
+      <div class="grid__item small--one-quarter medium-up--one-third text-right">
+        <div id="SiteNavSearchCart" class="site-header__search-cart-wrapper">
+          <form action="/search" method="get" class="site-header__search small--hide" role="search">
+            {% comment %}<input type="hidden" name="type" value="product">{% endcomment %}
+              <label for="SiteNavSearch" class="visually-hidden">{{ 'general.search.placeholder' | t }}</label>
+              <input type="search" name="q" id="SiteNavSearch" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="site-header__search-input">
 
-      <div class="grid__item {% if section.settings.align_logo == 'left' %}medium-up--one-quarter{% else %}medium-up--one-third medium-up--push-one-third{% endif %} text-right site-header__icons{% if shop.customer_accounts_enabled %} site-header__icons--plus{% endif %}">
-        <div class="site-header__icons-wrapper">
-          <div class="site-header__search site-header__icon">
-            {% include 'search-form' %}
-          </div>
+            <button type="submit" class="text-link site-header__link site-header__search-submit">
+              {% include 'icon-search' %}
+              <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+            </button>
+          </form>
 
-          <button type="button" class="btn--link site-header__icon site-header__search-toggle js-drawer-open-top">
-            {% include 'icon-search' %}
-            <span class="icon__fallback-text">{{ 'layout.navigation.search' | t }}</span>
-          </button>
-
-          {% if shop.customer_accounts_enabled %}
-            {% if customer %}
-              <a href="/account" class="site-header__icon site-header__account">
-                {% include 'icon-login' %}
-                <span class="icon__fallback-text">{{ 'layout.customer.account' | t }}</span>
-              </a>
-            {% else %}
-              <a href="/account/login" class="site-header__icon site-header__account">
-                {% include 'icon-login' %}
-                <span class="icon__fallback-text">{{ 'layout.customer.log_in' | t }}</span>
-              </a>
-            {% endif %}
-          {% endif %}
-
-          <a href="/cart" class="site-header__icon site-header__cart">
+          <a href="/cart" class="site-header__link site-header__cart">
             {% include 'icon-cart' %}
             <span class="icon__fallback-text">{{ 'layout.cart.title' | t }}</span>
-            {% if cart.item_count > 0 %}
-              <div id="CartCount" class="site-header__cart-count">
-                <span>{{ cart.item_count }}</span>
-                <span class="icon__fallback-text medium-up--hide">{{ 'layout.cart.items_count' | t: count: cart.item_count }}</span>
-              </div>
-            {% endif %}
+            <span class="site-header__cart-indicator {% if cart.item_count == 0 %}hide{% endif %}"></span>
           </a>
-
-          {% if shop.enabled_currencies.size > 1 %}
-            {% form 'currency', class: "currency-selector small--hide" %}
-              <label for="CurrencySelector" class="visually-hidden">{{ 'general.currency.dropdown_label' | t }}</label>
-              <div class="currency-selector__input-wrapper select-group">
-                <select name="currency" id="CurrencySelector" class="currency-selector__dropdown" aria-describedby="a11y-refresh-page-message" data-currency-selector>
-                  {% for currency in shop.enabled_currencies %}
-                    <option value="{{currency.iso_code}}"{% if currency == cart.currency %} selected="true"{% endif %}>{{currency.iso_code}}</option>
-                  {% endfor %}
-                </select>
-                {% include 'icon-chevron-down' %}
-              </div>
-            {% endform %}
-          {% endif %}
-
-          {% unless linklists[section.settings.main_linklist] == blank %}
-            <button type="button" class="btn--link site-header__icon site-header__menu js-mobile-nav-toggle mobile-nav--open" aria-controls="navigation"  aria-expanded="false" aria-label="{{ 'layout.navigation.menu' | t }}">
-              {% include 'icon-hamburger' %}
-              {% include 'icon-close' %}
-            </button>
-          {% endunless %}
         </div>
-
       </div>
     </div>
+  </div>
 
-    <nav class="mobile-nav-wrapper medium-up--hide" role="navigation">
-      <ul id="MobileNav" class="mobile-nav">
-        {% for link in linklists[section.settings.main_linklist].links %}
-          {%- assign outerLoopIndex = forloop.index -%}
-
-          <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-            {% if link.links != blank %}
-              {% capture child_list_handle %}{{ link.handle }}-{{ outerLoopIndex }}{% endcapture %}
-              <button type="button" class="btn--link js-toggle-submenu mobile-nav__link{% if link.child_active %} mobile-nav__link--active{% endif %}" data-target="{{ child_list_handle }}" data-level="1" aria-expanded="false">
-                <span class="mobile-nav__label">{{ link.title }}</span>
-                <div class="mobile-nav__icon">
-                  {% include 'icon-chevron-right' %}
-                </div>
+  <div id="StickNavWrapper">
+    <div id="StickyBar" class="sticky">
+      <nav class="nav-bar small--hide" role="navigation" id="StickyNav">
+        <div class="page-width">
+          <div class="grid grid--table">
+            <div class="grid__item {% if shop.customer_accounts_enabled %}four-fifths{% else%}seven-eighths{% endif %}" id="SiteNavParent">
+              <button type="button" class="hide text-link site-nav__link site-nav__link--compressed js-drawer-open-left" id="SiteNavCompressed">
+                {% include 'icon-hamburger' %}
+                <span class="site-nav__link-menu-label">{{ 'general.drawers.menu' | t }}</span>
+                <span class="icon__fallback-text">{{ 'general.drawers.navigation' | t }}</span>
               </button>
-              <ul class="mobile-nav__dropdown" data-parent="{{ child_list_handle }}" data-level="2">
-                <li class="visually-hidden" tabindex="-1" data-menu-title="2">
-                  {{- link.title }} {{ 'layout.navigation.menu' | t -}}
-                </li>
-                <li class="mobile-nav__item border-bottom">
-                  <div class="mobile-nav__table">
-                    <div class="mobile-nav__table-cell mobile-nav__return">
-                      <button class="btn--link js-toggle-submenu mobile-nav__return-btn" type="button" aria-expanded="true" aria-label="{{ link.title }}">
-                        {% include 'icon-chevron-left' %}
-                      </button>
-                    </div>
-                    <span class="mobile-nav__sublist-link mobile-nav__sublist-header mobile-nav__sublist-header--main-nav-parent">
-                      <span class="mobile-nav__label">{{ link.title }}</span>
-                    </span>
-                  </div>
-                </li>
+              <ul class="site-nav list--inline" id="SiteNav">
+                {% for link in linklists[section.settings.main_linklist].links %}
+                  {% assign child_list_handle = link.title | handleize %}
 
-                {% for childlink in link.links %}
-                  <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-                    {% if childlink.links != blank %}
-                      {% capture grandchild_list_handle %}{{ childlink.handle }}-{{ outerLoopIndex }}-{{ forloop.index }}{% endcapture %}
-                      <button type="button" class="btn--link js-toggle-submenu mobile-nav__link mobile-nav__sublist-link" data-target="{{ grandchild_list_handle }}" aria-expanded="false">
-                        <span class="mobile-nav__label">{{ childlink.title }}</span>
-                        <div class="mobile-nav__icon">
-                          {% include 'icon-chevron-right' %}
-                        </div>
-                      </button>
-                      <ul class="mobile-nav__dropdown" data-parent="{{ grandchild_list_handle }}" data-level="3">
-                        <li class="visually-hidden" tabindex="-1" data-menu-title="3">
-                          {{- childlink.title }} {{ 'layout.navigation.menu' | t -}}
-                        </li>
-                        <li class="mobile-nav__item border-bottom">
-                          <div class="mobile-nav__table">
-                            <div class="mobile-nav__table-cell mobile-nav__return">
-                              <button type="button" class="btn--link js-toggle-submenu mobile-nav__return-btn" data-target="{{ child_list_handle }}" aria-expanded="true" aria-label="{{ childlink.title }}">
-                                {% include 'icon-chevron-left' %}
-                              </button>
-                            </div>
-                            <a href="{{ childlink.url }}" class="mobile-nav__sublist-link mobile-nav__sublist-header">
-                              <span class="mobile-nav__label">{{ childlink.title }}</span>
-                            </a>
-                          </div>
-                        </li>
-                        {% for grandchildlink in childlink.links %}
-                          <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-                            <a href="{{ grandchildlink.url }}" class="mobile-nav__sublist-link">
-                              <span class="mobile-nav__label">{{ grandchildlink.title | escape }}</span>
-                            </a>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                    {% else %}
-                      <a href="{{ childlink.url }}" class="mobile-nav__sublist-link">
-                        <span class="mobile-nav__label">{{ childlink.title | escape }}</span>
+                  {% comment %}
+                    Use full width layout if there are 7+ links or parent has products
+                  {% endcomment %}
+                  {% assign meganav_use_columns = false %}
+                  {% assign nav_parent_product_count = link.object.products_count %}
+                  {% unless nav_parent_product_count == blank or nav_parent_product_count == 0 %}
+                    {% assign meganav_use_columns = true %}
+                  {% endunless %}
+
+                  {% if link.links.size > 7 %}
+                    {% assign meganav_use_columns = true %}
+                  {% endif %}
+
+                  {% assign is_collection_with_products = false %}
+                  {% if link.type == 'collection_link' and link.object.products_count > 0 %}
+                    {% assign is_collection_with_products = true %}
+                  {% endif %}
+
+                  {% if link.links != blank %}
+                    <li class="site-nav__item{% if link.active %} site-nav--active{% endif %}{% unless meganav_use_columns %} site-nav__item--no-columns{% endunless %}" aria-haspopup="true">
+                      <a href="{{ link.url }}" class="site-nav__link site-nav__link-toggle" id="SiteNavLabel-{{ child_list_handle }}" aria-controls="SiteNavLinklist-{{ child_list_handle }}" aria-expanded="false"{% if link.active %} aria-current="page"{% endif %}>
+                        {{ link.title }}
+                        {% include 'icon-arrow-down' %}
                       </a>
-                    {% endif %}
-                  </li>
+
+                      <div class="site-nav__dropdown meganav site-nav__dropdown--second-level" id="SiteNavLinklist-{{ child_list_handle }}" aria-labelledby="SiteNavLabel-{{ child_list_handle }}" role="navigation">
+                        <ul class="meganav__nav{% if is_collection_with_products %} meganav__nav--collection{% endif %} page-width">
+                          {% include 'site-nav' %}
+                        </ul>
+                      </div>
+                    </li>
+                  {% else %}
+                    <li class="site-nav__item{% if link.active %} site-nav--active{% endif %}">
+                      <a href="{{ link.url }}" class="site-nav__link"{% if link.active %} aria-current="page"{% endif %}>
+                        {{ link.title }}
+                      </a>
+                    </li>
+                  {% endif %}
                 {% endfor %}
               </ul>
-            {% else %}
-              <a href="{{ link.url }}" class="mobile-nav__link{% if link.active %} mobile-nav__link--active{% endif %}">
-                <span class="mobile-nav__label">{{ link.title }}</span>
-              </a>
-            {% endif %}
-          </li>
-        {% endfor %}
-        {% if shop.enabled_currencies.size > 1 %}
-          <li class="mobile-nav__item border-top">
-            {% form 'currency', class: "currency-selector" %}
-              <label for="CurrencySelectorMobile" class="currency-selector__label">{{ 'general.currency.dropdown_label' | t }}</label>
-              <div class="currency-selector__input-wrapper select-group">
-                <select name="currency" id="CurrencySelectorMobile" class="currency-selector__dropdown" aria-describedby="a11y-refresh-page-message" data-currency-selector>
-                  {% for currency in shop.enabled_currencies %}
-                    <option value="{{currency.iso_code}}"{% if currency == cart.currency %} selected="true"{% endif %}>{{currency.iso_code}}</option>
-                  {% endfor %}
-                </select>
-                {% include 'icon-chevron-down' %}
-              </div>
-            {% endform %}
-          </li>
+            </div>
+            <div class="grid__item {% if shop.customer_accounts_enabled %}one-fifth{% else%}one-eighth{% endif %} text-right">
+              <div class="sticky-only" id="StickyNavSearchCart"></div>
+              {% if shop.customer_accounts_enabled %}
+                <div class="customer-login-links sticky-hidden">
+                  {% if customer %}
+                    <a href="/account">
+                      {{ 'layout.customer.account' | t }}
+                    </a>
+                    {{ 'layout.customer.log_out' | t | customer_logout_link }}
+                  {% else %}
+                    {{ 'layout.customer.account' | t | customer_login_link }}
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+      <div id="NotificationSuccess" class="notification notification--success" aria-hidden="true">
+        <div class="page-width notification__inner notification__inner--has-link">
+          <a href="/cart" class="notification__link">
+            <span class="notification__message">{{ 'products.product.product_added_to_cart_html' | t }}</span>
+          </a>
+          <button type="button" class="text-link notification__close">
+            {% include 'icon-close' %}
+            <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
+          </button>
+        </div>
+      </div>
+      <div id="NotificationError" class="notification notification--error" aria-hidden="true">
+        <div class="page-width notification__inner">
+          <span class="notification__message notification__message--error" aria-live="assertive" aria-atomic="true"></span>
+          <button type="button" class="text-link notification__close">
+            {% include 'icon-close' %}
+            <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if section.settings.promo_bar_enable %}
+    <div id="NotificationPromo" class="notification notification--promo" data-text="{{ section.settings.promo_bar_text | strip_html | handle }}">
+      <div class="page-width notification__inner {% if section.settings.promo_bar_link != blank %} notification__inner--has-link{% endif %}">
+        {% if section.settings.promo_bar_link != blank %}
+          <a href="{{ section.settings.promo_bar_link }}" class="notification__link">
+            <span class="notification__message">{{ section.settings.promo_bar_text | escape }}</span>
+          </a>
+        {% else %}
+          <span class="notification__message">{{ section.settings.promo_bar_text | escape }}</span>
         {% endif %}
-      </ul>
-    </nav>
-  </header>
-
-  {% if section.settings.align_logo == 'center' %}
-  <nav class="small--hide border-bottom" id="AccessibleNav" role="navigation">
-    {% include 'site-nav', nav_alignment: 'site-nav--centered' %}
-  </nav>
+        <button type="button" class="text-link notification__close" id="NotificationPromoClose">
+          {% include 'icon-close' %}
+          <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
+        </button>
+      </div>
+    </div>
   {% endif %}
-</div>
+</header>
 
 
-
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Organization",
-  "name": "{{ shop.name }}",
-  {% if section.settings.logo %}
-    {% assign image_size = section.settings.logo.width | append:'x' %}
-    "logo": "https:{{ section.settings.logo | img_url: image_size }}",
-  {% endif %}
-  "sameAs": [
-    "{{ settings.social_twitter_link }}",
-    "{{ settings.social_facebook_link }}",
-    "{{ settings.social_pinterest_link }}",
-    "{{ settings.social_instagram_link }}",
-    "{{ settings.social_tumblr_link }}",
-    "{{ settings.social_snapchat_link }}",
-    "{{ settings.social_youtube_link }}",
-    "{{ settings.social_vimeo_link }}"
-  ],
-  "url": "{{ shop.url }}{{ page.url }}"
-}
-</script>
-
-{% if template.name == 'index' %}
-  <script type="application/ld+json">
-    {
-      "@context": "http://schema.org",
-      "@type": "WebSite",
-      "name": "{{ shop.name }}",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{ shop.url }}/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      },
-      "url": "{{ shop.url }}{{ page.url }}"
-    }
-  </script>
-{% endif %}
 
 {% schema %}
 {
@@ -331,46 +273,6 @@
   },
   "settings": [
     {
-      "type": "radio",
-      "id": "align_logo",
-      "label": {
-        "de": "Logo-Ausrichtung",
-        "en": "Logo alignment",
-        "es": "Alineación de logotipo",
-        "fr": "Alignement du logo",
-        "it": "Allineamento logo",
-        "ja": "ロゴアラインメント",
-        "pt-BR": "Alinhamento do logotipo"
-      },
-      "default": "left",
-      "options": [
-        {
-          "value": "left",
-          "label": {
-            "de": "Links",
-            "en": "Left",
-            "es": "Izquierda",
-            "fr": "Gauche",
-            "it": "Sinistra",
-            "ja": "左",
-            "pt-BR": "Esquerda"
-          }
-        },
-        {
-          "value": "center",
-          "label": {
-            "de": "Mittig",
-            "en": "Centered",
-            "es": "Centrada",
-            "fr": "Centré",
-            "it": "Centrato",
-            "ja": "中央揃え",
-            "pt-BR": "Centralizado"
-          }
-        }
-      ]
-    },
-    {
       "type": "image_picker",
       "id": "logo",
       "label": {
@@ -384,30 +286,26 @@
       }
     },
     {
-      "type": "range",
+      "type": "text",
       "id": "logo_max_width",
       "label": {
-        "de": "Logobreite",
-        "en": "Custom logo width",
-        "es": "Ancho del logotipo personalizado",
-        "fr": "Largeur personnalisée du logo",
-        "it": "Larghezza logo personalizzato",
-        "ja": "ロゴの幅をカスタムする",
-        "pt-BR": "Largura do logotipo personalizado"
+        "de": "Benutzerdefinierte Logobreite (Pixel)",
+        "en": "Custom logo width (in pixels)",
+        "es": "Ancho del logotipo personalizado (en píxeles)",
+        "fr": "Largeur personnalisée du logo (en pixels)",
+        "it": "Larghezza logo personalizzato (in pixel)",
+        "ja": "ロゴの幅をカスタムする（ピクセルで）",
+        "pt-BR": "Largura do logotipo personalizado (em pixels)"
       },
-      "min": 50,
-      "max": 250,
-      "step": 5,
-      "unit": {
-        "de": "px",
-        "en": "px",
-        "es": "px",
-        "fr": "px",
-        "it": "px",
-        "ja": "px",
-        "pt-BR": "px"
-      },
-      "default": 100
+      "default": {
+        "de": "450",
+        "en": "450",
+        "es": "450",
+        "fr": "450",
+        "it": "450",
+        "ja": "450",
+        "pt-BR": "450"
+      }
     },
     {
       "type": "link_list",
@@ -426,18 +324,18 @@
     {
       "type": "header",
       "content": {
-        "de": "Ankündigungsbereich",
+        "de": "Ankündigungsleiste",
         "en": "Announcement bar",
         "es": "Barra de anuncios",
         "fr": "Barre d'annonces",
         "it": "Barra degli annunci",
         "ja": "告知バー",
-        "pt-BR": "Barra de anúncios"
+        "pt-BR": "Barra de anúncio"
       }
     },
     {
       "type": "checkbox",
-      "id": "message",
+      "id": "promo_bar_enable",
       "label": {
         "de": "Ankündigung anzeigen",
         "en": "Show announcement",
@@ -446,26 +344,11 @@
         "it": "Mostra annuncio",
         "ja": "告知を表示する",
         "pt-BR": "Exibir anúncio"
-      },
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "home_page_only",
-      "label": {
-        "de": "Nur Startseite",
-        "en": "Home page only",
-        "es": "Solo página de inicio",
-        "fr": "Page d'accueil uniquement",
-        "it": "Solo home page",
-        "ja": "ホームページのみ",
-        "pt-BR": "Apenas página inicial"
-      },
-      "default": true
+      }
     },
     {
       "type": "text",
-      "id": "message_text",
+      "id": "promo_bar_text",
       "label": {
         "de": "Text",
         "en": "Text",
@@ -474,20 +357,11 @@
         "it": "Testo",
         "ja": "テキスト",
         "pt-BR": "Texto"
-      },
-      "default": {
-        "de": "Hier etwas ankündigen",
-        "en": "Announce something here",
-        "es": "Anuncia algo aquí",
-        "fr": "Annoncez quelque chose ici",
-        "it": "Annuncia qualcosa qui",
-        "ja": "ここで告知してください",
-        "pt-BR": "Anuncie algo aqui"
       }
     },
     {
       "type": "url",
-      "id": "message_link",
+      "id": "promo_bar_link",
       "label": {
         "de": "Link",
         "en": "Link",
@@ -506,34 +380,6 @@
         "ja": "選択させる",
         "pt-BR": "Opcional"
       }
-    },
-    {
-      "type": "color",
-      "id": "color_bg",
-      "label": {
-        "de": "Zeile",
-        "en": "Bar",
-        "es": "Barra",
-        "fr": "Barre",
-        "it": "Barra",
-        "ja": "バー",
-        "pt-BR": "Barra"
-      },
-      "default": "#7796a8"
-    },
-    {
-      "type": "color",
-      "id": "color_text",
-      "label": {
-        "de": "Text",
-        "en": "Text",
-        "es": "Texto",
-        "fr": "Texte",
-        "it": "Testo",
-        "ja": "テキスト",
-        "pt-BR": "Texto"
-      },
-      "default": "#fff"
     }
   ]
 }
