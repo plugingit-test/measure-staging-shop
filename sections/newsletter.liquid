@@ -1,35 +1,31 @@
-<div class="page-width">
-  <div class="section-block section-block--padding">
-    <div class="{% if section.settings.heading != blank or section.settings.subheading != blank %}section-block__header {% endif %}text-center">
-      {% unless section.settings.heading == blank %}
-        <h4 class="h1--mini section-block__title">{{ section.settings.heading | escape }}</h4>
-      {% endunless %}
-      {% unless section.settings.subheading == blank %}
-        <div class="section-block__subtext">{{ section.settings.subheading }}</div>
-      {% endunless %}
-    </div>
-    <div class="grid">
-      <div class="grid__item medium-up--two-thirds medium-up--push-one-sixth">
-        <div class="form-vertical">
-          {% form 'customer' %}
-            {{ form.errors | default_errors }}
-            {% if form.posted_successfully? %}
-              <p class="form-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
-            {% else %}
+<div id="home-newsletter" class="index-section home-section">
+  <div class="home-newsletter">
+    <div class="wrapper wrapper--margins">
+      <div class="newsletter text-center password-input-group">
+        {% form 'customer' %}
+          {{ form.errors | default_errors }}
+          {% if form.posted_successfully? %}
+            <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+          {% else %}
+            <div class="input-group">
               <input type="hidden" name="contact[tags]" value="newsletter">
-              <label for="NewsletterEmail-{{ block.id }}" class="label--hidden">{{ 'general.newsletter_form.newsletter_label' | t }}</label>
-              <div class="input-group">
-                <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_placeholder' | t }}" name="contact[email]" id="NewsletterEmail-{{ block.id }}" class="input-group__field" autocorrect="off" autocapitalize="off">
-                <div class="input-group__btn">
-                  <button type="submit" class="btn btn--narrow" name="commit">
-                    {% include 'icon-arrow-right' %}
-                    <span class="icon__fallback-text">{{ 'general.newsletter_form.submit' | t }}</span>
-                  </button>
-                </div>
-              </div>
-            {% endif %}
-          {% endform %}
-        </div>
+              {% if section.settings.heading != blank %}
+                <h2 class="home-section-title" for="Email">{{ section.settings.heading | escape }}</h2>
+              {% else %}
+                <label class="visually-hidden" for="Email">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+              {% endif %}
+              {% unless section.settings.subheading == blank %}
+                {{ section.settings.subheading }}
+              {% endunless %}
+              <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" name="contact[email]" id="Email" class="input-group__field newsletter__input" autocorrect="off" autocapitalize="off">
+              <span class="input-group__btn">
+                <button type="submit" class="btn newsletter__submit btn--regular btn--fill btn--color" name="commit" id="Subscribe">
+                  <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                </button>
+              </span>
+            </div>
+          {% endif %}
+        {% endform %}
       </div>
     </div>
   </div>
@@ -48,7 +44,6 @@
     "ja": "ニュースレター",
     "pt-BR": "Newsletter"
   },
-  "class": "index-section",
   "settings": [
     {
       "type": "text",
@@ -63,13 +58,13 @@
         "pt-BR": "Título"
       },
       "default": {
-        "de": "Unseren Newsletter abonnieren",
-        "en": "Subscribe to our newsletter",
-        "es": "Suscríbete a nuestro boletín de noticias",
-        "fr": "S'inscrire à la newsletter",
-        "it": "Iscriviti alla nostra newsletter",
-        "ja": "ストアからのお知らせを受け取る",
-        "pt-BR": "Receber nosso newsletter"
+        "de": "Auf dem Laufenden bleiben",
+        "en": "Stay up to date",
+        "es": "Mantente actualizado",
+        "fr": "Restez à jour",
+        "it": "Rimani aggiornato",
+        "ja": "最新に保つ",
+        "pt-BR": "Mantenha-se atualizado"
       }
     },
     {
@@ -91,7 +86,7 @@
         "fr": "<p>Promotions, nouveaux produits et soldes. Directement dans votre boîte de réception.</p>",
         "it": "<p>Promozioni, nuovi prodotti e offerte. Direttamente nella tua inbox.</p>",
         "ja": "<p>プロモーション、新商品、セールについて、あなたの受信箱に直接知らせる。</p>",
-        "pt-BR": "<p>Promoções, novos produtos e vendas. Diretamente para sua caixa de entrada.</p>"
+        "pt-BR": "<p>Promoções, novos produtos e ofertas, diretamente em sua caixa de entrada.</p>"
       }
     },
     {
@@ -103,7 +98,7 @@
         "fr": "Les clients qui s'inscrivent auront un compte créé pour eux dans Shopify. [Afficher les clients](/admin/customers?query=&accepts_marketing=1)",
         "it": "Qualsiasi cliente che si iscrive avrà un account creato appositamente su Shopify. [Visualizza clienti](/admin/customers?query=&accepts_marketing=1)",
         "ja": "サインアップしたお客様は、Shopifyでアカウントが作成されます。[お客様を表示](/admin/customers?query=&accepts_marketing=1)",
-        "pt-BR": "Todos os clientes que se inscreverem terão uma conta criada para eles na Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+        "pt-BR": "Todos os clientes que se inscreverem terão uma conta criada para eles na Shopify. [Ver clientes](/admin/customers?query=&accepts_marketing=1)"
       }
     }
   ],
@@ -128,6 +123,7 @@
         "pt-BR": "Promocional"
       }
     }
-  ]
+  ],
+  "blocks": []
 }
 {% endschema %}

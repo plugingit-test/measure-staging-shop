@@ -1,0 +1,301 @@
+<div id="home-features" class="index-section home-section">
+  <div class="wrapper wrapper--margins">
+    <div class="home-features">
+      {% if section.settings.title != blank %}
+        <h2 class="home-section-title">{{ section.settings.title | escape }}</h2>
+      {% endif %}
+
+      <ul class="features-list grid grid-margins">
+
+	  {% for block in section.blocks %}
+
+        {% case block.settings.width %}
+          {% when '25%' %}
+            {%- assign grid_class = 'grid__item large--one-quarter medium--one-half small--text-center' -%}
+          {% when '33%' %}
+            {%- assign grid_class = 'grid__item large--one-third medium-down--text-center' -%}
+          {% when '50%' %}
+            {%- assign grid_class = 'grid__item large--one-half medium--one-half small--text-center' -%}
+          {% when '66%' %}
+            {%- assign grid_class = 'grid__item large--two-thirds medium-down--text-center' -%}
+          {% when '75%' %}
+            {%- assign grid_class = 'grid__item large--three-quarters medium-down--text-center' -%}
+          {% when '100%' %}
+            {%- assign grid_class = 'grid__item one-whole--text-center' -%}
+        {% endcase %}
+
+
+			<li class="{{ grid_class }}" {{ block.shopify_attributes }}>
+				<i class="fa fa-{{ block.settings.home-features-icon | escape }} fa-3x"></i>
+				<h3 class="h4">{{ block.settings.home-features-title | escape }}</h3>
+				{{ block.settings.home-features-content }}
+			</li>
+
+      {% endfor %}
+
+      </ul>
+
+    </div>
+</div>
+</div>
+
+
+
+{% schema %}
+{
+  "name": {
+    "de": "Textspalten mit Symbolen",
+    "en": "Text columns with icons",
+    "es": "Texto con iconos",
+    "fr": "Texte avec des icônes",
+    "it": "Testo con icone",
+    "ja": "アイコン付きテキスト列",
+    "pt-BR": "Texto com ícones"
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "de": "Titel",
+        "en": "Heading",
+        "es": "Título",
+        "fr": "Titre",
+        "it": "Heading",
+        "ja": "見出し",
+        "pt-BR": "Título"
+      },
+      "default": {
+        "de": "Textspalten mit Symbolen",
+        "en": "Text columns with icons",
+        "es": "Columnas de texto con iconos",
+        "fr": "Colonnes de texte avec des icônes",
+        "it": "Colonne di testo con icone",
+        "ja": "アイコン付きテキスト列",
+        "pt-BR": "Colunas de texto com ícones"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "name": {
+        "de": "Textspalten mit Symbolen",
+        "en": "Text columns with icons",
+        "es": "Columnas de texto con iconos",
+        "fr": "Colonnes texte et icônes",
+        "it": "Colonne di testo con icone",
+        "ja": "アイコン付きテキスト列",
+        "pt-BR": "Texto com ícones"
+      },
+      "category": {
+        "de": "Text",
+        "en": "Text",
+        "es": "Texto",
+        "fr": "Texte",
+        "it": "Testo",
+        "ja": "テキスト",
+        "pt-BR": "Texto"
+      },
+      "blocks": [
+        {
+          "type": "text"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": {
+        "de": "Eine Funktion beschreiben",
+        "en": "Describe a feature",
+        "es": "Describir una función",
+        "fr": "Décrire une fonction",
+        "it": "Descrivi una funzionalità",
+        "ja": "特徴を説明する",
+        "pt-BR": "Descreva um recurso"
+      },
+      "settings": [
+        {
+          "type": "text",
+          "id": "home-features-icon",
+          "label": {
+            "de": "Symbolname",
+            "en": "Icon name",
+            "es": "Nombre de ícono",
+            "fr": "Nom de l'icône",
+            "it": "Nome icona",
+            "ja": "アイコン名",
+            "pt-BR": "Nome do ícone"
+          },
+          "default": {
+            "de": "bell-o",
+            "en": "bell-o",
+            "es": "bell-o",
+            "fr": "bell-o",
+            "it": "bell-o",
+            "ja": "bell-o",
+            "pt-BR": "bell-o"
+          },
+          "info": {
+            "de": "[Liste der verfügbaren Symbole anzeigen](https://fontawesome.com/v4.7.0/icons/)  Beispiel: Bluetooth",
+            "en": "[View the list of available icons](https://fontawesome.com/v4.7.0/icons/)  Example: bluetooth",
+            "es": "[Ver la lista de íconos disponibles](https://fontawesome.com/v4.7.0/icons/)  Ejemplo: bluetooth",
+            "fr": "[Afficher la liste d'icônes disponibles](https://fontawesome.com/v4.7.0/icons/)  Exemple : bluetooth",
+            "it": "[Visualizza l'elenco delle icone disponibili](https://fontawesome.com/v4.7.0/icons/)  Esempio: bluetooth",
+            "ja": "[利用可能なアイコンのリストを表示する](https://fontawesome.com/v4.7.0/icons/)例: Bluetooth",
+            "pt-BR": "[Veja os ícones disponíveis](https://fontawesome.com/v4.7.0/icons/)  Exemplo: bluetooth"
+          }
+        },
+        {
+          "type": "text",
+          "id": "home-features-title",
+          "default": {
+            "de": "Eine Funktion beschreiben",
+            "en": "Describe a feature",
+            "es": "Describir una función",
+            "fr": "Décrire une fonctionnalité",
+            "it": "Descrivi una funzionalità",
+            "ja": "特徴を説明する",
+            "pt-BR": "Descreva um recurso"
+          },
+          "label": {
+            "de": "Titel",
+            "en": "Title",
+            "es": "Título",
+            "fr": "Titre",
+            "it": "Titolo",
+            "ja": "タイトル",
+            "pt-BR": "Título"
+          }
+        },
+        {
+          "type": "richtext",
+          "id": "home-features-content",
+          "label": {
+            "de": "Text",
+            "en": "Text",
+            "es": "Texto",
+            "fr": "Texte",
+            "it": "Testo",
+            "ja": "テキスト",
+            "pt-BR": "Texto"
+          },
+          "default": {
+            "de": "<p>Dieser Bereich hat zur Zeit keinen Inhalt. <b>Fügen Sie diesem Bereich über die Seitenleiste Inhalte hinzu.</b></p>",
+            "en": "<p>This section doesn’t currently include any content. <b>Add content to this section using the sidebar.</b></p>",
+            "es": "<p>Esta sección no incluye contenido actualmente. <b>Agrega contenido a esta sección mediante la barra lateral.</b></p>",
+            "fr": "<p>Il n'y a aucun contenu dans cette section pour l'instant. <b>Ajoutez du contenu à cette section en utilisant la barre latérale.</b></p>",
+            "it": "<p>Attualmente questa sezione non contiene alcun contenuto. <b>Aggiungi del contenuto a questa sezione utilizzando la sidebar.</b></p>",
+            "ja": "<p>このセクションには現在コンテンツがございません。<b>サイドバーを使ってコンテンツを追加しましょう。</b></p>",
+            "pt-BR": "<p>Atualmente, esta seção não possui nenhum conteúdo. <b>Adicione conteúdo a esta seção usando a barra lateral.</b></p>"
+          },
+          "info": {
+            "de": "Verwenden Sie einfaches HTML zum Formatieren von Text",
+            "en": "Use basic HTML to format text",
+            "es": "Utiliza HTML básico para formatear texto",
+            "fr": "Utiliser le langage HTML de base pour mettre en forme du texte",
+            "it": "Usa l'HTML di base per formattare il testo",
+            "ja": "テキストの書式設定に簡単なHTMLを使用する",
+            "pt-BR": "Use HTML básico para formatar o texto"
+          }
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": {
+            "de": "Breite des Elements",
+            "en": "Container width",
+            "es": "Ancho del contenedor",
+            "fr": "Largeur du conteneur",
+            "it": "Larghezza contenitore",
+            "ja": "コンテナーの幅",
+            "pt-BR": "Largura do recipiente"
+          },
+          "default": "33%",
+          "options": [
+            {
+              "value": "25%",
+              "label": {
+                "de": "25%",
+                "en": "25%",
+                "es": "25%",
+                "fr": "25 %",
+                "it": "25%",
+                "ja": "25%",
+                "pt-BR": "25%"
+              }
+            },
+            {
+              "value": "33%",
+              "label": {
+                "de": "33%",
+                "en": "33%",
+                "es": "33%",
+                "fr": "33 %",
+                "it": "33%",
+                "ja": "33%",
+                "pt-BR": "33%"
+              }
+            },
+            {
+              "value": "50%",
+              "label": {
+                "de": "50%",
+                "en": "50%",
+                "es": "50%",
+                "fr": "50 %",
+                "it": "50%",
+                "ja": "50%",
+                "pt-BR": "50%"
+              }
+            },
+            {
+              "value": "66%",
+              "label": {
+                "de": "66%",
+                "en": "66%",
+                "es": "66%",
+                "fr": "66 %",
+                "it": "66%",
+                "ja": "66%",
+                "pt-BR": "66%"
+              }
+            },
+            {
+              "value": "75%",
+              "label": {
+                "de": "75%",
+                "en": "75%",
+                "es": "75%",
+                "fr": "75 %",
+                "it": "75%",
+                "ja": "75%",
+                "pt-BR": "75%"
+              }
+            },
+            {
+              "value": "100%",
+              "label": {
+                "de": "100%",
+                "en": "100%",
+                "es": "100%",
+                "fr": "100 %",
+                "it": "100%",
+                "ja": "100%",
+                "pt-BR": "100%"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
