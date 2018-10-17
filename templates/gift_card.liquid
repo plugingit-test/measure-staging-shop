@@ -20,7 +20,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="format-detection" content="telephone=no">
 
-  {{ 'gift-card.scss.css' | asset_url | stylesheet_tag }}
+  {% comment pluginspeed replaced-css DON'T CHANGE %}{{ 'gift-card.scss.css' | asset_url | stylesheet_tag }}{% endcomment %}{%- include 'pluginspeed-minify-asset', asset: 'gift-card.scss.css', tag: 'stylesheet', liquid_tag: true -%}
 
   {{ 'vendor/qrcode.js' | shopify_asset_url | script_tag }}
 
