@@ -1,68 +1,23 @@
-<div class="page-width">
-  {% if section.settings.image != blank %}
-    {% assign img_url = section.settings.image | img_url: '1024x' | format: 'jpg' %}
-  {% endif %}
-
-  <div class="section-block">
-    {% if section.settings.image == blank %}
-      <div class="placeholder-background">
-        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
-      </div>
-    {% endif %}
-    <noscript>
-      <div class="featured-content" {% if section.settings.image != blank %}style="background-image: url({{ img_url }}); background-position: {{ section.settings.image_align }}"{% endif %}>
-        <div class="emphasized-title-wrapper">
-          {% if section.settings.link != blank %}
-            <a href="{{ section.settings.link }}" class="emphasized-title emphasized-title--link emphasized-title--large h1">
-              {{ section.settings.title | escape }}
-            </a>
-          {% else %}
-            <h4 class="emphasized-title emphasized-title--large h1">
-              {{ section.settings.title | escape }}
-            </h4>
-          {% endif %}
-        </div>
-        {% if section.settings.link != blank %}
-          <a href="{{ section.settings.link }}" class="emphasized-subtitle">
-            {{ section.settings.subtext | escape }}
-          </a>
-        {% else %}
-          <span class="emphasized-subtitle">
-            {{ section.settings.subtext | escape }}
-          </span>
-        {% endif %}
-      </div>
-    </noscript>
-    <div class="featured-content lazyload"
-      {% if section.settings.image != blank %}
-        style="background-position: {{ section.settings.image_align }};
-               background-image: url('{{ section.settings.image | img_url: '300x300' }});"
-      {% endif %}
-      data-bgset="{% include 'bgset', image: section.settings.image %}"
-      data-sizes="auto"
-      data-parent-fit="cover">
-      <div class="emphasized-title-wrapper">
-        {% if section.settings.link != blank %}
-          <a href="{{ section.settings.link }}" class="emphasized-title emphasized-title--link emphasized-title--large h1">
-            {{ section.settings.title | escape }}
-          </a>
-        {% else %}
-          <h4 class="emphasized-title emphasized-title--large h1">
-            {{ section.settings.title | escape }}
-          </h4>
-        {% endif %}
-      </div>
-      {% if section.settings.link != blank %}
-        <a href="{{ section.settings.link }}" class="emphasized-subtitle">
-          {{ section.settings.subtext | escape }}
-        </a>
-      {% else %}
-        <span class="emphasized-subtitle">
-          {{ section.settings.subtext | escape }}
-        </span>
-      {% endif %}
-    </div>
-  </div>
+<div id="home-page" class="index-section home-section">
+	<div class="home-page-content overlay-{{ section.settings.home-page-background-overlay }}">
+		{% if section.settings.home-page-bg %}
+			<span class="prlx-bg prlx-bg--{{ section.id }} no-js lazyload overlay-{{ section.settings.home-page-background-overlay }}"
+				data-bgset="{% include 'bgset', image: section.settings.home-page-bg %}"
+				data-sizes="auto"
+				data-parent-fit="cover"></span>
+			<noscript>
+				<span class="prlx-bg prlx-bg--{{ section.id }} overlay-{{ section.settings.home-page-background-overlay }}" style="background-image: url('{{ section.settings.home-page-bg | img_url: '2048x2048' }}')"></span>
+			</noscript>
+		{% endif %}
+			{% for block in section.blocks %}
+			<div class="wrapper wrapper--margins" {{ block.shopify_attributes }}>
+				{% if block.settings.block_title != blank %}<h2 class="home-section-title">{{ block.settings.block_title | escape }}</h2>{% endif %}
+				<div class="rte">
+					{{ block.settings.content }}
+				</div>
+			</div>
+		{% endfor %}
+	</div>
 </div>
 
 
@@ -70,85 +25,18 @@
 {% schema %}
 {
   "name": {
-    "de": "Bild mit Textlink",
-    "en": "Image with text link",
-    "es": "Imagen con enlace",
-    "fr": "Image avec lien texte",
-    "it": "Immagine con text link",
-    "ja": "テキストリンク付き画像",
-    "pt-BR": "Imagem com link de texto"
+    "de": "Bild mit Textüberlagerung",
+    "en": "Image with text overlay",
+    "es": "Imagen con texto",
+    "fr": "Image et texte superposé",
+    "it": "Immagine con testo",
+    "ja": "テキストオーバーレイ付き画像",
+    "pt-BR": "Imagem com texto"
   },
-  "class": "index-section",
   "settings": [
     {
-      "type": "text",
-      "id": "title",
-      "label": {
-        "de": "Titel",
-        "en": "Heading",
-        "es": "Título",
-        "fr": "Titre",
-        "it": "Heading",
-        "ja": "見出し",
-        "pt-BR": "Título"
-      },
-      "default": {
-        "de": "Bild mit Textlink",
-        "en": "Image with text link",
-        "es": "Imagen con enlace",
-        "fr": "Image avec lien texte",
-        "it": "Immagine con text link",
-        "ja": "テキストリンク付き画像",
-        "pt-BR": "Imagem com link de texto"
-      }
-    },
-    {
-      "type": "text",
-      "id": "subtext",
-      "label": {
-        "de": "Unter-Überschrift",
-        "en": "Subheading",
-        "es": "Subtítulo",
-        "fr": "Sous-titre",
-        "it": "Sottotitolo",
-        "ja": "小見出し",
-        "pt-BR": "Subtítulo"
-      },
-      "default": {
-        "de": "Jetzt shoppen",
-        "en": "Shop now",
-        "es": "Comprar ahora",
-        "fr": "Acheter maintenant",
-        "it": "Acquista ora",
-        "ja": "今すぐ購入",
-        "pt-BR": "Compre agora"
-      }
-    },
-    {
-      "type": "url",
-      "id": "link",
-      "label": {
-        "de": "Link",
-        "en": "Link",
-        "es": "Enlace",
-        "fr": "Lien",
-        "it": "Link",
-        "ja": "リンク",
-        "pt-BR": "Link"
-      },
-      "info": {
-        "de": "Optional",
-        "en": "Optional",
-        "es": "Opcional",
-        "fr": "Facultatif",
-        "it": "Facoltativo",
-        "ja": "選択させる",
-        "pt-BR": "Opcional"
-      }
-    },
-    {
       "type": "image_picker",
-      "id": "image",
+      "id": "home-page-bg",
       "label": {
         "de": "Hintergrundbild",
         "en": "Background image",
@@ -160,68 +48,89 @@
       }
     },
     {
-      "type": "radio",
-      "id": "image_align",
+      "type": "checkbox",
+      "id": "home-page-background-overlay",
       "label": {
-        "de": "Fotoausrichtung",
-        "en": "Image alignment",
-        "es": "Alineación de imagen",
-        "fr": "Alignement de l'image",
-        "it": "Allineamento immagine",
-        "ja": "画像アラインメント",
-        "pt-BR": "Alinhamento da imagem"
+        "de": "Ein weißes Overlay zum Hintergrundbild hinzufügen",
+        "en": "Add white overlay on background image",
+        "es": "Agrega superposición blanca sobre la imagen de fondo.",
+        "fr": "Ajouter une superposition blanche sur l'image d'arrière-plan",
+        "it": "Sovrapponi filtro bianco all'immagine di sfondo",
+        "ja": "背景画像に白のオーバーレイを追加する",
+        "pt-BR": "Adicionar sobreposição de branco na imagem de plano de fundo"
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": {
+        "de": "Text",
+        "en": "Text",
+        "es": "Texto",
+        "fr": "Texte",
+        "it": "Testo",
+        "ja": "テキスト",
+        "pt-BR": "Texto"
       },
-      "options": [
+      "settings": [
         {
-          "value": "top center",
+          "type": "text",
+          "id": "block_title",
           "label": {
-            "de": "Oben Mitte",
-            "en": "Top center",
-            "es": "Superior al centro",
-            "fr": "En haut au centre",
-            "it": "In alto al centro",
-            "ja": "中央上",
-            "pt-BR": "Superior centro"
+            "de": "Titel",
+            "en": "Heading",
+            "es": "Título",
+            "fr": "Titre",
+            "it": "Heading",
+            "ja": "見出し",
+            "pt-BR": "Título"
+          },
+          "default": {
+            "de": "Über Ihre Marke sprechen",
+            "en": "Talk about your brand",
+            "es": "Habla de tu marca",
+            "fr": "Parlez de votre marque",
+            "it": "Parla del tuo brand",
+            "ja": "あなたのブランドについて語る",
+            "pt-BR": "Fale sobre a sua marca"
           }
         },
         {
-          "value": "center center",
+          "type": "richtext",
+          "id": "content",
           "label": {
-            "de": "Mitte",
-            "en": "Center",
-            "es": "Centrar",
-            "fr": "Centre",
-            "it": "Al centro",
-            "ja": "中央",
-            "pt-BR": "Centro"
-          }
-        },
-        {
-          "value": "bottom center",
-          "label": {
-            "de": "Unten mittig",
-            "en": "Bottom center",
-            "es": "Inferior al centro",
-            "fr": "En bas au centre",
-            "it": "In basso al centro",
-            "ja": "中央下",
-            "pt-BR": "Inferior centro"
+            "de": "Text",
+            "en": "Text",
+            "es": "Texto",
+            "fr": "Texte",
+            "it": "Testo",
+            "ja": "テキスト",
+            "pt-BR": "Texto"
+          },
+          "default": {
+            "de": "<p>Nutzen Sie diesen Text, um Infos über Ihre Marke mitzuteilen. Beschreiben Sie ein Produkt, kündigen Sie etwas an oder heißen Sie Kunden willkommen.</p>",
+            "en": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>",
+            "es": "<p>Usa este texto para compartir información sobre tu marca con tus clientes. Describe un producto, comparte anuncios o recibe clientes en tu tienda.</p>",
+            "fr": "<p>Utilisez ce texte pour partager des informations sur votre marque. Décrivez un produit, partagez des annonces, ou souhaitez la bienvenue à vos clients.</p>",
+            "it": "<p>Utilizza questo testo per condividere le informazioni sul tuo brand con i clienti. Descrivi un prodotto, condividi gli annunci o dai il benvenuto ai clienti nel tuo negozio.</p>",
+            "ja": "<p>このテキストを使用して、あなたのブランドに関する情報をお客様と共有します。商品を説明したり、告知の共有をしたり、あるいはあなたのストアのお客様を歓迎します。</p>",
+            "pt-BR": "<p>Use este texto para compartilhar informações sobre sua marca com seus clientes. Descreva um produto, compartilhe anúncios ou receba os clientes em sua loja.</p>"
           }
         }
-      ],
-      "default": "top center"
+      ]
     }
   ],
   "presets": [
     {
       "name": {
-        "de": "Bild mit Textlink",
-        "en": "Image with text link",
-        "es": "Imagen con enlace",
-        "fr": "Image avec lien texte",
-        "it": "Immagine con text link",
-        "ja": "テキストリンク付き画像",
-        "pt-BR": "Imagem com link de texto"
+        "de": "Bild mit Textüberlagerung",
+        "en": "Image with text overlay",
+        "es": "Imagen con texto",
+        "fr": "Image et texte superposé",
+        "it": "Immagine con testo",
+        "ja": "テキストオーバーレイ付き画像",
+        "pt-BR": "Imagem com sobreposição de texto"
       },
       "category": {
         "de": "Foto",
@@ -231,7 +140,12 @@
         "it": "Immagine",
         "ja": "画像",
         "pt-BR": "Imagem"
-      }
+      },
+      "blocks": [
+        {
+          "type": "text"
+        }
+      ]
     }
   ]
 }

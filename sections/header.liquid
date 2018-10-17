@@ -1,262 +1,181 @@
-<style>
-.site-header__logo img {
-  max-width: {{ section.settings.logo_max_width | default: '450' | remove: 'px' | append: 'px' | escape }};
-}
-</style>
+<div data-section-id="{{ section.id }}" data-section-type="header-section">
+  {% if section.settings.show_announcement %}
+    {% if section.settings.home_page_only == false or template.name == 'index' %}
+      <style>
+        .announcement-bar {
+          background-color: {{ section.settings.announcement_color_bg }};
+        }
 
-<div id="NavDrawer" class="drawer drawer--left">
-  <div class="drawer__inner">
-    <form action="/search" method="get" class="drawer__search" role="search">
-      <input type="search" name="q" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="drawer__search-input">
+        .announcement-bar--link:hover {
+          {% assign brightness = section.settings.announcement_color_bg | color_brightness %}
 
-      <button type="submit" class="text-link drawer__search-submit">
-        {% include 'icon-search' %}
-        <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
-      </button>
-    </form>
-    <ul class="drawer__nav">
-      {% for link in linklists[section.settings.main_linklist].links %}
-        {% assign child_list_handle = link.title | handleize %}
+          {% if brightness <= 192 %}
+            {% assign lightenAmount = 255 | minus: brightness | divided_by: 255 | times: 16 %}
+            background-color: {{ section.settings.announcement_color_bg | color_lighten: lightenAmount }};
+          {% else %}
+            {% assign darkenAmount = 255 | divided_by: brightness | times: 8 %}
+            background-color: {{ section.settings.announcement_color_bg | color_darken: darkenAmount }};
+          {% endif %}
+        }
 
-        {% if link.links != blank %}
-          <li class="drawer__nav-item">
-            <div class="drawer__nav-has-sublist">
-              <a href="{{ link.url }}"
-                class="drawer__nav-link drawer__nav-link--top-level drawer__nav-link--split"
-                id="DrawerLabel-{{ child_list_handle }}"
-                {% if link.active %} aria-current="page"{% endif %}
-              >
-                {{ link.title }}
-              </a>
-              <button type="button" aria-controls="DrawerLinklist-{{ child_list_handle }}" class="text-link drawer__nav-toggle-btn drawer__meganav-toggle" aria-label="{{ link.title }} {{ 'general.drawers.menu' | t }}" aria-expanded="false">
-                <span class="drawer__nav-toggle--open">
-                  {% include 'icon-plus' %}
-                </span>
-                <span class="drawer__nav-toggle--close">
-                  {% include 'icon-minus' %}
-                </span>
-              </button>
-            </div>
+        .announcement-bar__message {
+          color: {{ section.settings.announcement_color_text }};
+        }
+      </style>
 
-            <div class="meganav meganav--drawer" id="DrawerLinklist-{{ child_list_handle }}" aria-labelledby="DrawerLabel-{{ child_list_handle }}" role="navigation">
-              <ul class="meganav__nav">
-                {% include 'drawer-nav' %}
-              </ul>
-            </div>
-          </li>
+      {% if section.settings.announcement_link == blank %}
+        <div class="announcement-bar">
+      {% else %}
+        <a href="{{ section.settings.announcement_link }}" class="announcement-bar announcement-bar--link">
+      {% endif %}
+
+        <p class="announcement-bar__message">{{ section.settings.announcement_text | escape }}</p>
+
+      {% if section.settings.announcement_link == blank %}
+        </div>
+      {% else %}
+        </a>
+      {% endif %}
+
+    {% endif %}
+  {% endif %}
+
+  <header class="site-header site-header--{{ section.settings.menu_style }} animate {% if section.settings.menu_text_color %}{{ section.settings.menu_text_color }}{% endif %}" role="banner" data-menu-style="{{ section.settings.menu_style }}">
+    <div class="wrapper">
+      {% if section.settings.logo_use_inverted and section.settings.logo-inverted != blank %}
+        {% assign inverted_logo_in_use = true %}
+      {% endif %}
+
+      {% if section.settings.logo != blank or inverted_logo_in_use %}
+        {%if section.settings.logo_max_width != blank %}
+          {% capture logo_image_width %}{{ section.settings.logo_max_width | remove: 'px' | escape }}{% endcapture %}
         {% else %}
-          <li class="drawer__nav-item">
-            <a href="{{ link.url }}"
-              class="drawer__nav-link drawer__nav-link--top-level"
-              {% if link.active %} aria-current="page"{% endif %}
-            >
-              {{ link.title }}
-            </a>
-          </li>
-        {% endif %}
-      {% endfor %}
-
-      {% if shop.customer_accounts_enabled %}
-        {% if customer %}
-          <li class="drawer__nav-item">
-            <a href="/account" class="drawer__nav-link drawer__nav-link--top-level">
-              {{ 'layout.customer.account' | t }}
-            </a>
-          </li>
-          <li class="drawer__nav-item">
-            <a href="/account/logout" class="drawer__nav-link drawer__nav-link--top-level">
-              {{ 'layout.customer.log_out' | t }}
-            </a>
-          </li>
-        {% else %}
-          <li class="drawer__nav-item">
-            <a href="/account/login" class="drawer__nav-link drawer__nav-link--top-level">
-              {{ 'layout.customer.account' | t }}
-            </a>
-          </li>
+          {% assign logo_image_width = '200' %}
         {% endif %}
       {% endif %}
-    </ul>
-  </div>
-</div>
 
-<header class="site-header page-element is-moved-by-drawer" role="banner" data-section-id="{{ section.id }}" data-section-type="header">
-  <div class="site-header__upper page-width">
-    <div class="grid grid--table">
-      <div class="grid__item small--one-quarter medium-up--hide">
-        <button type="button" class="text-link site-header__link js-drawer-open-left">
-          <span class="site-header__menu-toggle--open">
-            {% include 'icon-hamburger' %}
-          </span>
-          <span class="site-header__menu-toggle--close">
-            {% include 'icon-close' %}
-          </span>
-          <span class="icon__fallback-text">{{ 'general.drawers.navigation' | t }}</span>
-        </button>
-      </div>
-      <div class="grid__item small--one-half medium-up--two-thirds small--text-center">
-        {% if template.name == 'index' %}
-          <h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
-        {% else %}
-          <div class="site-header__logo h1" itemscope itemtype="http://schema.org/Organization">
+      {% if template.name == 'index' %}
+        <h1 class="site-header__logo {% if section.settings.logo or inverted_logo_in_use %} display-table use-image" style="max-width:{{ logo_image_width }}px;"{% endif %} itemscope itemtype="http://schema.org/Organization">
+      {% else %}
+        <div class="h1 site-header__logo {% if section.settings.logo or inverted_logo_in_use %} display-table use-image" style="max-width:{{ logo_image_width }}px;"{% endif %} itemscope itemtype="http://schema.org/Organization">
+      {% endif %}
+
+      {% if section.settings.logo or inverted_logo_in_use %}
+        {%- assign img_url = section.settings.logo | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {% capture image_size_for_url %}{{ logo_image_width }}x{% endcapture %}
+        {% if inverted_logo_in_use and template.name == 'index'  %}
+          <a href="/" itemprop="url" class="site-header__logo-link--inverted display-table-cell">
+          <img src="{{ section.settings.logo-inverted | img_url: image_size_for_url }}"
+            srcset="{{ section.settings.logo-inverted | img_url: image_size_for_url }} 1x, {{ section.settings.logo-inverted | img_url: image_size_for_url, scale: 2 }} 2x"
+            alt="{{ section.settings.logo.alt | default: shop.name }}"
+            itemprop="logo">
+          </a>
         {% endif %}
-          {% if section.settings.logo != blank %}
-            {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
-            <a href="/" itemprop="url" class="site-header__logo-link">
-              <img src="{{ section.settings.logo | img_url: image_size }}"
-                   srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
-                   alt="{{ section.settings.logo.alt | default: shop.name }}"
-                   itemprop="logo">
-            </a>
-          {% else %}
-            {% assign shop_name_length = shop.name.size %}
-            <a href="/" itemprop="url" {% if shop_name_length > 10 %} class="site-header__shop-name--small"{% endif %}>{{ shop.name }}</a>
+        {% if section.settings.logo %}
+          <a href="/" itemprop="url" class="site-header__logo-link display-table-cell{% if inverted_logo_in_use and template.name == 'index' %} logo--hidden{% endif %}">
+            <img src="{{ section.settings.logo | img_url: image_size_for_url }}"
+              srcset="{{ section.settings.logo | img_url: image_size_for_url }} 1x, {{ section.settings.logo | img_url: image_size_for_url, scale: 2 }} 2x"
+              alt="{{ section.settings.logo.alt | default: shop.name }}"
+              itemprop="logo">
+          </a>
+        {% else %}
+          <a href="/" itemprop="url" class="site-header__logo-text site-header__logo-link display-table-cell{% if inverted_logo_in_use and template.name == 'index' %} logo--hidden{% endif %}">{{ shop.name }}</a>
+        {% endif %}
+      {% else %}
+        <a href="/" itemprop="url" class="site-header__logo-text">{{ shop.name }}</a>
+      {% endif %}
+
+      {% if template.name == 'index' %}
+        </h1>
+      {% else %}
+        </div>
+      {% endif %}
+
+      <nav class="nav-bar" id="navBar" role="navigation">
+        <button id="menu-closer" class="lines-button lines-button--close" aria-controls="navBar" aria-expanded="true">
+          <span class="fallback-text">{{ 'layout.navigation.close_menu' | t }}</span>
+          <span class="lines" aria-hidden="true"></span>
+        </button>
+        <ul class="site-nav" id="AccessibleNav">
+          {% for link in linklists[section.settings.main_linklist].links %}
+            {% if link.links != blank %}
+              <li class="site-nav--has-dropdown" aria-haspopup="true">
+                <button class="site-nav__link" aria-expanded="false">
+                  {{ link.title | escape }}
+                  <span class="icon icon-plus" aria-hidden="true">{% include 'asset_svg' with 'plus' %}</span>
+                  <span class="icon icon-minus" aria-hidden="true">{% include 'asset_svg' with 'minus' %}</span>
+                </button>
+                <ul class="site-nav__dropdown">
+                  <div>
+                    {% for childlink in link.links %}
+                      {% if childlink.links != blank %}
+                        <li class="site-nav--has-dropdown" aria-haspopup="true">
+                          <button class="site-nav__link site-nav__link--child" aria-expanded="false">
+                            {{ childlink.title | escape }}
+                            <span class="icon icon-plus" aria-hidden="true">{% include 'asset_svg' with 'plus' %}</span>
+                            <span class="icon icon-minus" aria-hidden="true">{% include 'asset_svg' with 'minus' %}</span>
+                          </button>
+                          <ul class="site-nav__dropdown site-nav__dropdown--grandchilds">
+                            <div>
+                              {% for grandchildlink in childlink.links %}
+                                <li>
+                                  <a href="{{ grandchildlink.url }}" class="site-nav__link site-nav__link--grandchild{% if grandchildlink.active %} site-nav--active{% endif %}" {% if grandchildlink.active %}aria-current="page"{% endif %}>{{ grandchildlink.title | escape }}</a>
+                                </li>
+                              {% endfor %}
+                            </div>
+                          </ul>
+                        </li>
+                      {% else %}
+                        <li>
+                          <a href="{{ childlink.url }}" class="site-nav__link site-nav__link--child{% if childlink.active %} site-nav--active{% endif %}" {% if childlink.active %}aria-current="page"{% endif %}>{{ childlink.title | escape }}</a>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="arrow">&nbsp;</span>
+                </ul>
+              </li>
+            {% else %}
+              <li>
+                <a href="{{ link.url }}" class="site-nav__link{% if link.active %} site-nav--active{% endif %}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% unless section.settings.menu_product == blank %}
+            <li class="btn__buy"><a href="{{ all_products[section.settings.menu_product].url }}" class="btn btn--outline {% if section.settings.menu_style == 'classic' %} btn--small btn--dark {% else %} btn--regular btn--light {% endif %}">{{ 'layout.navigation.buy_button' | t }} <span class="visually-hidden">{{ all_products[section.settings.menu_product].title }}</span> {{ all_products[section.settings.menu_product].price | money_without_trailing_zeros }}</a></li>
+          {% endunless %}
+
+          {% if cart.item_count > 0 %}
+            <li class="btn__cart">
+              <a href="/cart">
+                <span class="icon" aria-hidden="true">{% unless cart.item_count > 99 %}{{ cart.item_count }}{% endunless %}{% include 'asset_svg' with 'cart' %}</span>
+                <span class="text">{{ 'layout.navigation.shopping_cart' | t }}</span>
+              </a>
+            </li>
           {% endif %}
-        {% if template.name == 'index' %}
-          </h1>
-        {% else %}
-          </div>
-        {% endif %}
-      </div>
 
-      <div class="grid__item small--one-quarter medium-up--one-third text-right">
-        <div id="SiteNavSearchCart" class="site-header__search-cart-wrapper">
-          <form action="/search" method="get" class="site-header__search small--hide" role="search">
-            {% comment %}<input type="hidden" name="type" value="product">{% endcomment %}
-              <label for="SiteNavSearch" class="visually-hidden">{{ 'general.search.placeholder' | t }}</label>
-              <input type="search" name="q" id="SiteNavSearch" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="site-header__search-input">
+          {% if shop.customer_accounts_enabled %}
+            <li class="btn__account">
+              <a href="/account{% unless customer %}/login{% endunless %}">
+                <span class="icon" aria-hidden="true">{% include 'asset_svg' with 'account' %}</span>
+                <span class="text">{{ 'layout.navigation.my_account' | t }}</span>
+              </a>
+            </li>
+          {% endif %}
 
-            <button type="submit" class="text-link site-header__link site-header__search-submit">
-              {% include 'icon-search' %}
-              <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
-            </button>
-          </form>
+        </ul>
 
-          <a href="/cart" class="site-header__link site-header__cart">
-            {% include 'icon-cart' %}
-            <span class="icon__fallback-text">{{ 'layout.cart.title' | t }}</span>
-            <span class="site-header__cart-indicator {% if cart.item_count == 0 %}hide{% endif %}"></span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="StickNavWrapper">
-    <div id="StickyBar" class="sticky">
-      <nav class="nav-bar small--hide" role="navigation" id="StickyNav">
-        <div class="page-width">
-          <div class="grid grid--table">
-            <div class="grid__item {% if shop.customer_accounts_enabled %}four-fifths{% else%}seven-eighths{% endif %}" id="SiteNavParent">
-              <button type="button" class="hide text-link site-nav__link site-nav__link--compressed js-drawer-open-left" id="SiteNavCompressed">
-                {% include 'icon-hamburger' %}
-                <span class="site-nav__link-menu-label">{{ 'general.drawers.menu' | t }}</span>
-                <span class="icon__fallback-text">{{ 'general.drawers.navigation' | t }}</span>
-              </button>
-              <ul class="site-nav list--inline" id="SiteNav">
-                {% for link in linklists[section.settings.main_linklist].links %}
-                  {% assign child_list_handle = link.title | handleize %}
-
-                  {% comment %}
-                    Use full width layout if there are 7+ links or parent has products
-                  {% endcomment %}
-                  {% assign meganav_use_columns = false %}
-                  {% assign nav_parent_product_count = link.object.products_count %}
-                  {% unless nav_parent_product_count == blank or nav_parent_product_count == 0 %}
-                    {% assign meganav_use_columns = true %}
-                  {% endunless %}
-
-                  {% if link.links.size > 7 %}
-                    {% assign meganav_use_columns = true %}
-                  {% endif %}
-
-                  {% assign is_collection_with_products = false %}
-                  {% if link.type == 'collection_link' and link.object.products_count > 0 %}
-                    {% assign is_collection_with_products = true %}
-                  {% endif %}
-
-                  {% if link.links != blank %}
-                    <li class="site-nav__item{% if link.active %} site-nav--active{% endif %}{% unless meganav_use_columns %} site-nav__item--no-columns{% endunless %}" aria-haspopup="true">
-                      <a href="{{ link.url }}" class="site-nav__link site-nav__link-toggle" id="SiteNavLabel-{{ child_list_handle }}" aria-controls="SiteNavLinklist-{{ child_list_handle }}" aria-expanded="false"{% if link.active %} aria-current="page"{% endif %}>
-                        {{ link.title }}
-                        {% include 'icon-arrow-down' %}
-                      </a>
-
-                      <div class="site-nav__dropdown meganav site-nav__dropdown--second-level" id="SiteNavLinklist-{{ child_list_handle }}" aria-labelledby="SiteNavLabel-{{ child_list_handle }}" role="navigation">
-                        <ul class="meganav__nav{% if is_collection_with_products %} meganav__nav--collection{% endif %} page-width">
-                          {% include 'site-nav' %}
-                        </ul>
-                      </div>
-                    </li>
-                  {% else %}
-                    <li class="site-nav__item{% if link.active %} site-nav--active{% endif %}">
-                      <a href="{{ link.url }}" class="site-nav__link"{% if link.active %} aria-current="page"{% endif %}>
-                        {{ link.title }}
-                      </a>
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="grid__item {% if shop.customer_accounts_enabled %}one-fifth{% else%}one-eighth{% endif %} text-right">
-              <div class="sticky-only" id="StickyNavSearchCart"></div>
-              {% if shop.customer_accounts_enabled %}
-                <div class="customer-login-links sticky-hidden">
-                  {% if customer %}
-                    <a href="/account">
-                      {{ 'layout.customer.account' | t }}
-                    </a>
-                    {{ 'layout.customer.log_out' | t | customer_logout_link }}
-                  {% else %}
-                    {{ 'layout.customer.account' | t | customer_login_link }}
-                  {% endif %}
-                </div>
-              {% endif %}
-            </div>
-          </div>
-        </div>
       </nav>
-      <div id="NotificationSuccess" class="notification notification--success" aria-hidden="true">
-        <div class="page-width notification__inner notification__inner--has-link">
-          <a href="/cart" class="notification__link">
-            <span class="notification__message">{{ 'products.product.product_added_to_cart_html' | t }}</span>
-          </a>
-          <button type="button" class="text-link notification__close">
-            {% include 'icon-close' %}
-            <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
-          </button>
-        </div>
-      </div>
-      <div id="NotificationError" class="notification notification--error" aria-hidden="true">
-        <div class="page-width notification__inner">
-          <span class="notification__message notification__message--error" aria-live="assertive" aria-atomic="true"></span>
-          <button type="button" class="text-link notification__close">
-            {% include 'icon-close' %}
-            <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  {% if section.settings.promo_bar_enable %}
-    <div id="NotificationPromo" class="notification notification--promo" data-text="{{ section.settings.promo_bar_text | strip_html | handle }}">
-      <div class="page-width notification__inner {% if section.settings.promo_bar_link != blank %} notification__inner--has-link{% endif %}">
-        {% if section.settings.promo_bar_link != blank %}
-          <a href="{{ section.settings.promo_bar_link }}" class="notification__link">
-            <span class="notification__message">{{ section.settings.promo_bar_text | escape }}</span>
-          </a>
-        {% else %}
-          <span class="notification__message">{{ section.settings.promo_bar_text | escape }}</span>
-        {% endif %}
-        <button type="button" class="text-link notification__close" id="NotificationPromoClose">
-          {% include 'icon-close' %}
-          <span class="icon__fallback-text">{{ 'cart.general.close_notification' | t }}</span>
-        </button>
-      </div>
+      <button id="menu-opener" class="lines-button" aria-controls="navBar" aria-expanded="false">
+        <span class="fallback-text">{{ 'layout.navigation.open_menu' | t }}</span>
+        <span class="lines" aria-hidden="true"></span>
+      </button>
+
     </div>
-  {% endif %}
-</header>
+  </header>
+</div>
 
 
 
@@ -273,16 +192,72 @@
   },
   "settings": [
     {
+      "type": "header",
+      "content": {
+        "de": "Logo",
+        "en": "Logo",
+        "es": "Logotipo",
+        "fr": "Logo",
+        "it": "Logo",
+        "ja": "ロゴ",
+        "pt-BR": "Logotipo"
+      }
+    },
+    {
       "type": "image_picker",
       "id": "logo",
       "label": {
         "de": "Logo-Foto",
         "en": "Logo image",
-        "es": "Logotipo",
+        "es": "Imagen del logotipo",
         "fr": "Image du logo",
         "it": "Immagine del logo",
         "ja": "ロゴ画像",
         "pt-BR": "Imagem do logotipo"
+      },
+      "info": {
+        "de": "200px breites .png empfohlen",
+        "en": "200px wide .png recommended",
+        "es": "200px de ancho .png recomendado",
+        "fr": "200 px wide .png recommandé",
+        "it": "File .png con larghezza di 200 pixel consigliato",
+        "ja": "200ピクセル幅.png推奨",
+        "pt-BR": ".png com 200 px de largura recomendado"
+      }
+    },
+    {
+      "type": "checkbox",
+      "id": "logo_use_inverted",
+      "label": {
+        "de": "Ein Startseitenlogo nutzen",
+        "en": "Use a home page logo",
+        "es": "Usa un logotipo de la página de inicio",
+        "fr": "Utiliser un logo de la page d'accueil",
+        "it": "Usare un logo per la home page",
+        "ja": "ホームページのロゴを使用する",
+        "pt-BR": "Use um logotipo na página inicial"
+      }
+    },
+    {
+      "type": "image_picker",
+      "id": "logo-inverted",
+      "label": {
+        "de": "Startseitenlogo",
+        "en": "Home page logo",
+        "es": "Logotipo de la página de inicio",
+        "fr": "Logo de la page d'accueil",
+        "it": "Logo della home page",
+        "ja": "ホームページのロゴ",
+        "pt-BR": "Logotipo da página inicial"
+      },
+      "info": {
+        "de": "In Slideshow anzeigen",
+        "en": "Shown on slideshow",
+        "es": "Mostrado en diapositivas",
+        "fr": "Affiché sur le diaporama",
+        "it": "Mostrato sulla presentazione",
+        "ja": "スライドショーに表示する",
+        "pt-BR": "Exibido em slides"
       }
     },
     {
@@ -298,13 +273,25 @@
         "pt-BR": "Largura do logotipo personalizado (em pixels)"
       },
       "default": {
-        "de": "450",
-        "en": "450",
-        "es": "450",
-        "fr": "450",
-        "it": "450",
-        "ja": "450",
-        "pt-BR": "450"
+        "de": "250",
+        "en": "250",
+        "es": "250",
+        "fr": "250",
+        "it": "250",
+        "ja": "250",
+        "pt-BR": "250"
+      }
+    },
+    {
+      "type": "header",
+      "content": {
+        "de": "Navigation",
+        "en": "Navigation",
+        "es": "Navegación",
+        "fr": "Navigation",
+        "it": "Navigazione",
+        "ja": "メニュー",
+        "pt-BR": "Navegação"
       }
     },
     {
@@ -322,6 +309,106 @@
       "default": "main-menu"
     },
     {
+      "type": "select",
+      "id": "menu_style",
+      "label": {
+        "de": "Menü-Stil",
+        "en": "Menu style",
+        "es": "Estilo del menú",
+        "fr": "Style de menu",
+        "it": "Stile menu",
+        "ja": "メニュースタイル",
+        "pt-BR": "Estilo do menu"
+      },
+      "options": [
+        {
+          "value": "classic",
+          "label": {
+            "de": "Klassisch",
+            "en": "Classic",
+            "es": "Clásico",
+            "fr": "Classique",
+            "it": "Classico",
+            "ja": "クラシック",
+            "pt-BR": "Clássico"
+          }
+        },
+        {
+          "value": "drawer",
+          "label": {
+            "de": "Einschub",
+            "en": "Drawer",
+            "es": "Carrito lateral",
+            "fr": "Tiroir",
+            "it": "Finestra",
+            "ja": "ドロワー",
+            "pt-BR": "Caixa registradora"
+          }
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "menu_text_color",
+      "label": {
+        "de": "Klassische Menüfarbe",
+        "en": "Classic menu color",
+        "es": "Colores del menú clásico",
+        "fr": "Couleur de menu classique",
+        "it": "Colore menu classico",
+        "ja": "クラシックメニューのカラー",
+        "pt-BR": "Cor do menu clássico"
+      },
+      "options": [
+        {
+          "value": "is-dark",
+          "label": {
+            "de": "Dunkel",
+            "en": "Dark",
+            "es": "Oscuro",
+            "fr": "Foncé",
+            "it": "Scuro",
+            "ja": "ダーク",
+            "pt-BR": "Dark"
+          }
+        },
+        {
+          "value": "is-light",
+          "label": {
+            "de": "Hell",
+            "en": "Light",
+            "es": "Claro",
+            "fr": "Clair",
+            "it": "Chiaro",
+            "ja": "ライト",
+            "pt-BR": "Light"
+          }
+        }
+      ],
+      "info": {
+        "de": "Nutzen Sie dies für eine bessere Sichtbarkeit, wenn das Menü über dunklen Abschnitten liegt",
+        "en": "Use this when the menu is over dark sections for better visibility",
+        "es": "Úsalo cuando el menú esté sobre secciones oscuras para una mejor visibilidad",
+        "fr": "Utilisez ceci lorsque le menu se trouve sur des sections sombres, pour une meilleure visibilité",
+        "it": "Usare quando il menu è su sezioni scure per una migliore visibilità",
+        "ja": "視認性を高めるため、暗いセクションの上にメニューがある場合に使用します",
+        "pt-BR": "Use quando o menu estiver sobre seções escuras para melhorar a visibilidade"
+      }
+    },
+    {
+      "type": "product",
+      "id": "menu_product",
+      "label": {
+        "de": "Produkt für \"Jetzt kaufen\"-Schaltfläche",
+        "en": "Product for \"buy now\" button",
+        "es": "Producto para el botón \"comprar ahora\"",
+        "fr": "Produit pour le bouton « Acheter maintenant »",
+        "it": "Prodotto per il pulsante \"Acquista ora\"",
+        "ja": "「今すぐ購入」ボタンのための商品",
+        "pt-BR": "Botão de produto para \"comprar agora\""
+      }
+    },
+    {
       "type": "header",
       "content": {
         "de": "Ankündigungsleiste",
@@ -335,7 +422,7 @@
     },
     {
       "type": "checkbox",
-      "id": "promo_bar_enable",
+      "id": "show_announcement",
       "label": {
         "de": "Ankündigung anzeigen",
         "en": "Show announcement",
@@ -344,32 +431,56 @@
         "it": "Mostra annuncio",
         "ja": "告知を表示する",
         "pt-BR": "Exibir anúncio"
-      }
+      },
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "home_page_only",
+      "label": {
+        "de": "Nur Startseite",
+        "en": "Home page only",
+        "es": "Solo página de inicio",
+        "fr": "Page d'accueil uniquement",
+        "it": "Solo home page",
+        "ja": "ホームページのみ",
+        "pt-BR": "Apenas página inicial"
+      },
+      "default": true
     },
     {
       "type": "text",
-      "id": "promo_bar_text",
+      "id": "announcement_text",
       "label": {
-        "de": "Text",
-        "en": "Text",
-        "es": "Texto",
-        "fr": "Texte",
-        "it": "Testo",
-        "ja": "テキスト",
-        "pt-BR": "Texto"
+        "de": "Ankündigungstext",
+        "en": "Announcement text",
+        "es": "Texto del anuncio",
+        "fr": "Texte d'annonce",
+        "it": "Testo annuncio",
+        "ja": "告知テキスト",
+        "pt-BR": "Texto do anúncio"
+      },
+      "default": {
+        "de": "Hier etwas ankündigen",
+        "en": "Announce something here",
+        "es": "Anuncia algo aquí",
+        "fr": "Annoncez quelque chose ici",
+        "it": "Annuncia qualcosa qui",
+        "ja": "ここで告知してください",
+        "pt-BR": "Anuncie algo aqui"
       }
     },
     {
       "type": "url",
-      "id": "promo_bar_link",
+      "id": "announcement_link",
       "label": {
-        "de": "Link",
-        "en": "Link",
-        "es": "Enlace",
-        "fr": "Lien",
-        "it": "Link",
-        "ja": "リンク",
-        "pt-BR": "Link"
+        "de": "Ankündigungslink",
+        "en": "Announcement link",
+        "es": "Enlace de anuncio",
+        "fr": "Lien d'annonce",
+        "it": "Link annuncio",
+        "ja": "告知リンク",
+        "pt-BR": "Link de anúncio"
       },
       "info": {
         "de": "Optional",
@@ -380,6 +491,34 @@
         "ja": "選択させる",
         "pt-BR": "Opcional"
       }
+    },
+    {
+      "type": "color",
+      "id": "announcement_color_bg",
+      "label": {
+        "de": "Zeile",
+        "en": "Bar",
+        "es": "Barra",
+        "fr": "Barre",
+        "it": "Barra",
+        "ja": "バー",
+        "pt-BR": "Barra"
+      },
+      "default": "#429c80"
+    },
+    {
+      "type": "color",
+      "id": "announcement_color_text",
+      "label": {
+        "de": "Text",
+        "en": "Text",
+        "es": "Texto",
+        "fr": "Texte",
+        "it": "Testo",
+        "ja": "テキスト",
+        "pt-BR": "Texto"
+      },
+      "default": "#fff"
     }
   ]
 }

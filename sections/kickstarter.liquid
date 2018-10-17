@@ -1,0 +1,305 @@
+<div id="home-kickstarter" class="index-section home-kickstarter" data-section-id="{{ section.id }}" data-section-type="home-kickstarter">
+
+	<div class="home-kickstarter">
+
+		{% if section.settings.home-kickstarter-bg != blank %}
+		<span class="prlx-bg prlx-bg--{{ section.id }} no-js lazyload"
+			data-bgset="{% include 'bgset', image: section.settings.home-kickstarter-bg %}"
+			data-sizes="auto"
+			data-parent-fit="cover">
+			{%- assign img_url = section.settings.home-kickstarter-bg | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+			<img class="no-js lazyload lazypreload"
+				data-src="{{ img_url }}"
+				data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+				data-aspectratio="{{ section.settings.home-kickstarter-bg.aspect_ratio }}"
+				data-sizes="auto"
+				data-parent-fit="width"
+				alt="{{ section.settings.home-kickstarter-bg.alt | escape }}"/>
+		</span>
+		<noscript>
+			<span class="prlx-bg prlx-bg--{{ section.id }}" style="background-image: url('{{ section.settings.home-kickstarter-bg | img_url: '2048x2048' }}')"></span>
+		</noscript>
+		{% endif %}
+
+		<div class="wrapper wrapper--margins">
+
+			<div class="kickstarter__content {% unless section.settings.home-kickstarter-bg %} text-center {% endunless %}">
+
+				{% unless section.settings.home-kickstarter-title == blank %}
+				  <h2>{{ section.settings.home-kickstarter-title | escape }}</h2>
+				{% endunless %}
+
+				{% unless section.settings.home-kickstarter-subtitle == blank %}
+				  <h3>{{ section.settings.home-kickstarter-subtitle | escape }}</h3>
+				{% endunless %}
+
+				<div class="kickstarter__meta kickstarter--{{ section.settings.home-kickstarter-style }}">
+					<div class="kickstarter__graphic bar" data-value="{{ section.settings.home-kickstarter-percent | escape | remove: '%' }}" data-color="{{ settings.color_primary }}"></div>
+					<div class="kickstarter__graphic pie" data-value="{{ section.settings.home-kickstarter-percent | escape | remove: '%' }}" data-color="{{ settings.color_primary }}"></div>
+					<ul>
+						{% unless section.settings.home-kickstarter-percent == blank %}
+						  <li><strong>{{ section.settings.home-kickstarter-percent | escape | remove: '%' }}%</strong><span>{{ 'homepage.crowdfunding_campaign.funded' | t }}</span></li>
+						{% endunless %}
+						{% unless section.settings.home-kickstarter-amount == blank %}
+						  <li><strong>{{ section.settings.home-kickstarter-amount | escape }}</strong><span>{{ 'homepage.crowdfunding_campaign.pledged' | t }}</span></li>
+						{% endunless %}
+						{% unless section.settings.home-kickstarter-backers == blank %}
+						  <li><strong>{{ section.settings.home-kickstarter-backers | escape }}</strong><span>{{ 'homepage.crowdfunding_campaign.backers' | t }}</span></li>
+						{% endunless %}
+					</ul>
+				</div>
+
+				{% if section.settings.home-kickstarter-url != blank %}
+				<a href="{{ section.settings.home-kickstarter-url | escape }}" class="btn btn--regular btn--dark btn--outline">{{ 'homepage.crowdfunding_campaign.pledge_button' | t }}</a>
+				{% endif %}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+{% schema %}
+{
+  "name": {
+    "de": "Kampagnen-Tracker",
+    "en": "Campaign tracker",
+    "es": "Seguimiento de campaña",
+    "fr": "Suivi de campagne",
+    "it": "Tracker di una campagna",
+    "ja": "キャンペーントラッカー",
+    "pt-BR": "Rastreador de campanhas"
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "home-kickstarter-title",
+      "default": {
+        "de": "Crowdfunding",
+        "en": "Crowdfunding",
+        "es": "Crowdfunding",
+        "fr": "Crowdfunding",
+        "it": "Crowdfunding",
+        "ja": "クラウドファンディング",
+        "pt-BR": "Financiamento coletivo"
+      },
+      "label": {
+        "de": "Titel",
+        "en": "Title",
+        "es": "Título",
+        "fr": "Titre",
+        "it": "Titolo",
+        "ja": "タイトル",
+        "pt-BR": "Título"
+      }
+    },
+    {
+      "type": "text",
+      "id": "home-kickstarter-subtitle",
+      "default": {
+        "de": "Kampagnen-Tracker",
+        "en": "Campaign tracker",
+        "es": "Seguimiento de campaña",
+        "fr": "Suivi de campagne",
+        "it": "Tracker di una campagna",
+        "ja": "キャンペーントラッカー",
+        "pt-BR": "Rastreador de campanhas"
+      },
+      "label": {
+        "de": "Untertitel",
+        "en": "Subtitle",
+        "es": "Subtítulo",
+        "fr": "Sous-titre",
+        "it": "Sottotitolo",
+        "ja": "字幕",
+        "pt-BR": "Legenda"
+      }
+    },
+    {
+      "type": "select",
+      "id": "home-kickstarter-style",
+      "default": "pie",
+      "label": {
+        "de": "Stil Werteangaben",
+        "en": "Stats style",
+        "es": "Estilo de estadísticas",
+        "fr": "Style de statistiques",
+        "it": "Stile statistiche",
+        "ja": "統計スタイル",
+        "pt-BR": "Estilo das estatísticas"
+      },
+      "options": [
+        {
+          "value": "pie",
+          "label": {
+            "de": "Tortendiagramm mit kleineren Werten",
+            "en": "Pie with smaller stats",
+            "es": "Gráfico de circular con estadísticas más pequeñas",
+            "fr": "Graphique à secteurs avec des statistiques petites",
+            "it": "Grafico a torta con statistiche in formato ridotto",
+            "ja": "より小さい統計の円グラフ",
+            "pt-BR": "Torta com estatísticas menores"
+          }
+        },
+        {
+          "value": "bar",
+          "label": {
+            "de": "Balkendiagramm mit größeren Werten",
+            "en": "Bar with larger stats",
+            "es": "Gráfico de barras con estadísticas más grandes",
+            "fr": "Graphique à barres avec des statistiques larges",
+            "it": "Grafico a barre con statistiche in formato ampio",
+            "ja": "より大きい統計の棒グラフ",
+            "pt-BR": "Barra com estatísticas maiores"
+          }
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "home-kickstarter-bg",
+      "label": {
+        "de": "Hintergrundbild",
+        "en": "Background image",
+        "es": "Imagen de fondo",
+        "fr": "Image de fond",
+        "it": "Immagine di sfondo",
+        "ja": "背景画像",
+        "pt-BR": "Imagem de fundo"
+      },
+      "info": {
+        "de": "Heller Hintergrund auf der linken Seite",
+        "en": "Light background on the left side",
+        "es": "Fondo claro en el lado izquierdo",
+        "fr": "Fond clair sur le côté gauche",
+        "it": "Sfondo chiaro sul lato sinistro",
+        "ja": "左側の背景を明るくする",
+        "pt-BR": "Luz de fundo no lado esquerdo"
+      }
+    },
+    {
+      "type": "header",
+      "content": {
+        "de": "Kampagnendetails",
+        "en": "Campaign details",
+        "es": "Detalles de la campaña",
+        "fr": "Détails de la campagne",
+        "it": "Dettagli campagna",
+        "ja": "キャンペーン詳細",
+        "pt-BR": "Detalhes da campanha"
+      }
+    },
+    {
+      "type": "text",
+      "id": "home-kickstarter-percent",
+      "default": {
+        "de": "75",
+        "en": "75",
+        "es": "75",
+        "fr": "75",
+        "it": "75",
+        "ja": "75",
+        "pt-BR": "75"
+      },
+      "label": {
+        "de": "Finanzierter Prozentsatz",
+        "en": "Funded percent",
+        "es": "Porcentaje financiado",
+        "fr": "Pourcentage financé",
+        "it": "Percentuale fondi raccolti",
+        "ja": "資金調達の割合",
+        "pt-BR": "Porcentagem financiada"
+      }
+    },
+    {
+      "type": "text",
+      "id": "home-kickstarter-amount",
+      "default": {
+        "de": "$1000",
+        "en": "$1000",
+        "es": "$1000",
+        "fr": "1 000 $",
+        "it": "$1000",
+        "ja": "$1000",
+        "pt-BR": "$ 1000"
+      },
+      "label": {
+        "de": "Finanzierte Summe",
+        "en": "Funded amount",
+        "es": "Monto financiado",
+        "fr": "Montant financé",
+        "it": "Importo raccolto",
+        "ja": "資金調達額",
+        "pt-BR": "Montante financiado"
+      }
+    },
+    {
+      "type": "text",
+      "id": "home-kickstarter-backers",
+      "default": {
+        "de": "10",
+        "en": "10",
+        "es": "10",
+        "fr": "10",
+        "it": "10",
+        "ja": "10",
+        "pt-BR": "10"
+      },
+      "label": {
+        "de": "Anzahl der Unterstützer",
+        "en": "Number of backers",
+        "es": "Cantidad de patrocinadores",
+        "fr": "Nombre de soutiens",
+        "it": "Numero di sostenitori",
+        "ja": "バッカー数",
+        "pt-BR": "Número de apoiadores"
+      }
+    },
+    {
+      "type": "text",
+      "id": "home-kickstarter-url",
+      "default": {
+        "de": "https://www.shopify.com",
+        "en": "https://www.shopify.com",
+        "es": "https://www.shopify.com",
+        "fr": "https://www.shopify.com",
+        "it": "https://www.shopify.com",
+        "ja": "https://www.shopify.com",
+        "pt-BR": "https://www.shopify.com"
+      },
+      "label": {
+        "de": "Projekt-URL",
+        "en": "Project URL",
+        "es": "URL del proyecto",
+        "fr": "URL du projet",
+        "it": "URL progetto",
+        "ja": "プロジェクトのURL",
+        "pt-BR": "URL do projeto"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "name": {
+        "de": "Kampagnen-Tracker",
+        "en": "Campaign tracker",
+        "es": "Seguimiento de campaña",
+        "fr": "Suivi de campagne",
+        "it": "Tracker di una campagna",
+        "ja": "キャンペーントラッカー",
+        "pt-BR": "Rastreador de campanhas"
+      },
+      "category": {
+        "de": "Laden-Info",
+        "en": "Store information",
+        "es": "Información sobre tu tienda",
+        "fr": "Renseignements sur votre boutique",
+        "it": "Informazioni del negozio",
+        "ja": "ストア情報",
+        "pt-BR": "Informações sobre a loja"
+      }
+    }
+  ]
+}
+{% endschema %}

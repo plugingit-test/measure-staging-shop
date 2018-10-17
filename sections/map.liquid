@@ -16,9 +16,9 @@
   }
 </style>
 
-<div class="map-section{% if display_map %} map-section--display-map{% endif %}" data-section-id="{{ section.id }}" data-section-type="map" data-api-key="{{ section.settings.api_key }}">
-  <div class="page-width map-section__wrapper">
-    <div class="map-section__content-wrapper">
+<div class="index-section map-section{% if display_map %} map-section--display-map{% endif %}" data-section-id="{{ section.id }}" data-section-type="map-section" data-api-key="{{ section.settings.api_key }}">
+  <div class="map-section__wrapper">
+    <div class="wrapper map-section__content-wrapper">
       <div class="map-section__overlay">
         {% if section.settings.map_title != blank %}
           <h4 class="h1--mini">{{ section.settings.map_title | escape }}</h4>
@@ -26,12 +26,12 @@
         {% if section.settings.address != blank %}
           <div class="rte-setting">{{ section.settings.address }}</div>
           {% if section.settings.button != blank and section.settings.map_address != blank %}
-            <p><a class="btn" href="https://maps.google.com?daddr={{ section.settings.map_address | escape }}" target="_blank">
+            <a href="https://maps.google.com?daddr={{ section.settings.map_address | escape }}" class="btn btn--outline btn--small btn--dark" target="_blank">
               {% if section.settings.show_pin %}
-                <span class="icon-pin" aria-hidden="true">{% include 'icon-pin' %}</span>
+                <span class="icon-pin" aria-hidden="true">{% include 'asset_svg' with 'pin' %}</span>
               {% endif %}
               {{ section.settings.button | escape }}
-            </a></p>
+            </a>
           {% endif %}
         {% endif %}
       </div>
@@ -56,7 +56,7 @@
         <div class="map-section__container"
              id="Map-{{ section.id }}"
              data-address-setting="{{ section.settings.map_address | escape }}"
-             data-marker-color="{{ settings.color_button_bg }}">
+             data-marker-color="{{ settings.color_primary }}">
         </div>
       {% endif %}
     </div>
@@ -76,7 +76,6 @@
     "ja": "マップ",
     "pt-BR": "Mapa"
   },
-  "class": "index-section index-section--flush",
   "settings": [
     {
       "id": "map_title",
@@ -119,7 +118,7 @@
         "fr": "<p>123 rue inventée<br>Paris, France</p><p>Lun. - ven., 10 h - 21 h<br>Samedi, 11 h - 21 h<br>Dimanche, 11 h - 17 h</p>",
         "it": "<p>123 Fake St.<br>Toronto, Canada</p><p>Lun-Ven, 10:00 - 21:00<br>Sabato, 11:00 - 21:00<br>Domenica, 11:00 - 17:00</p>",
         "ja": "<p>123 Fake St.<br>Toronto, Canada</p><p>月曜日～金曜日、午前10時〜午後9時<br>土曜日、午前11時〜午後9時<br>日曜日、午前11時〜午後5時</p>",
-        "pt-BR": "<p>123 Fake St. <br> Toronto, Canadá</p><p>Seg. - Sex., 10h - 21h <br> Sábado, 11h às 21h <br> Domingo, 11h às 17h</p>"
+        "pt-BR": "<p>Rua Fake, 123 <br> São Paulo, Brasil</p><p>Seg. - Sex., 10h - 21h <br> Sábado, 11h às 21h <br> Domingo, 11h às 17h</p>"
       }
     },
     {
@@ -166,13 +165,13 @@
         "pt-BR": "Etiqueta de link do mapa"
       },
       "default": {
-        "de": "Wegbeschreibung",
-        "en": "Directions",
-        "es": "Indicaciones",
-        "fr": "Itinéraire",
-        "it": "Direzioni",
-        "ja": "道順",
-        "pt-BR": "Direções"
+        "de": "Wegbeschreibung bekommen",
+        "en": "Get directions",
+        "es": "Obtener indicaciones",
+        "fr": "Obtenir un itinéraire",
+        "it": "Richiedi direzioni",
+        "ja": "道順を知る",
+        "pt-BR": "Obter direções"
       }
     },
     {
