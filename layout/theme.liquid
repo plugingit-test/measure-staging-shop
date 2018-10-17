@@ -1,3 +1,10 @@
+{%- comment -%}
+  The HTML of this shop is minified by Plug in Speed.
+  You can edit your file as normal inside the "capture minified" tags.
+  You can disable HTML minification through your entire shop by changing
+	useMinification to false in the file snippets/pluginspeed-minify-html.liquid
+{%- endcomment -%}
+{%- capture non_minified_html -%}
 <!doctype html>
 <html class="no-js">
 <head>
@@ -23,6 +30,7 @@
   <meta name="theme-color" content="{{ settings.color_primary }}">
 
   {{ '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' | stylesheet_tag }}
+
   {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
 
   <script>
@@ -78,7 +86,7 @@
       {{ content_for_layout }}
 
     </main>
-
+ABDCD
     {% section 'footer' %}
 
   </div>
@@ -115,3 +123,12 @@
 
 </body>
 </html>
+{%- endcapture non_minified_html -%}
+{%- assign minifier = 'pluginspeed-minify-html' -%}
+{%- capture minifier_output -%}{%- include minifier, minified: non_minified_html -%}{%- endcapture -%}
+{%- assign error_message = 'Liquid error: Could not find asset snippets/' | append: minifier -%}
+{%- if minifier_output contains error_message -%}
+ {{ non_minified_html }}
+{%- else -%}
+  {{ minifier_output }}
+{%- endif -%}
